@@ -75,6 +75,11 @@ class Client
      */
     private $status;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $civilite;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -184,6 +189,18 @@ class Client
     public function setStatus(?int $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getCivilite(): ?string
+    {
+        return $this->civilite;
+    }
+
+    public function setCivilite(?string $civilite): self
+    {
+        $this->civilite = $civilite;
 
         return $this;
     }
