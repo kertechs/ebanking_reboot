@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="http://www.banquedauphine.online/"><img src="imgFront/logo-dauphine.png" height="30" width="97" ></a>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="http://www.banquedauphine.online/">ACCUEIL</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block body %}
+    <!-- Container (Contact Section) -->
+    <div id="contact" class="container-fluid bg-grey">
+        <form>
+            <div class="row">
+                <div class="container">
+                    <legend>Rejoignez-Nous</legend>
+                    <div class="form-row">
+                        <div class="col-md-3 mb-3">
+                            <label for="inputCivilite">Civilité</label>
+                            <select id="inputCivilite" class="form-control">
+                                <option>Sélection</option>
+                                <option>Madame</option>
+                                <option>Monsieur</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom01">Prénom</label>
+                            <input type="text" class="form-control" id="validationCustom01">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="validationCustom02">Nom</label>
+                            <input type="text" class="form-control" id="validationCustom02">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-md-7 mb-3">
+                            <label for="inputEmail4">E-mail</label>
+                            <input type="email" class="form-control" id="inputEmail4">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="inputPassword4">Mot de passe</label>
+                            <input type="password" class="form-control" id="inputPassword4">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-md-7 mb-3">
+                            <label for="inputAddress">Addresse</label>
+                            <input type="text" class="form-control" id="inputAddress">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="inputAddress">Code postal</label>
+                            <input type="text" class="form-control" id="inputAddress">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="inputAddress">Ville</label>
+                            <input type="text" class="form-control" id="inputAddress">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br/>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-lg">Envoyer</button>
+            </div>
+
+        </form>
+    </div>
+
+    </div>
+{% endblock %}

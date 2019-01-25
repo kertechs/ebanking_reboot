@@ -1,0 +1,35 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+
+ouvriruncompte:
+  path:       /
+  host:       "ouvrir-un-compte.banquedauphine.online"
+  controller: App\Controller\InscriptionController::index
+  #defaults:
+  #  subdomain: m
+  #requirements:
+  #  subdomain: m|mobile
+
+clients:
+  path:       /
+  host:       "clients.banquedauphine.online"
+  controller: App\Controller\EspaceClientController::index
+  #defaults:
+  #  subdomain: m
+  #requirements:
+  #  subdomain: m|mobile
+
+clients_login:
+  path:       /connexion
+  host:       "clients.banquedauphine.online"
+  controller: App\Controller\EspaceClientController::login
+
+
+homepage:
+  path:       /
+  controller: App\Controller\MainController::index
+
+ouvriruncompte2:
+  path:       /ouvrir-un-compte
+  controller: App\Controller\InscriptionController::index
