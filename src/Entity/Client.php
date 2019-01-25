@@ -13,16 +13,15 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
  */
 class Client
 {
+    const PROSPECT=100;
+    const CURRENT=200;
+    const ON_HOLD=300;
+
     use TimestampableEntity;
     use SoftDeleteableEntity;
     use BlameableEntity;
     use IpTraceableEntity;
 
-    /*
-    use TimestampableEntity;
-    use SoftDeleteableEntity;
-    use BlameableEntity;
-    */
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -53,7 +52,7 @@ class Client
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $pays;
+    private $pays='France';
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -73,7 +72,7 @@ class Client
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $status;
+    private $status=self::PROSPECT;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -83,6 +82,12 @@ class Client
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function __construct()
+    {
+        $this->setCreatedAt(new \DateTime());
+        //$this->setCreatedBy();
     }
 
     public function getPrenom(): ?string
