@@ -20,26 +20,12 @@ class InscriptionController extends AbstractController
         $form = $this->createForm(ClientRegistrationType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
             $client = $form->getData();
-            //dump('data = ' . print_r($data, true));
-
-            /*$client = new Client();
-            dd($client);
-            $client->setPrenom($data['prenom']);
-            $client->setNom($data['nom']);
-            $client->setEmail($data['email']);
-            $client->setMobile($data['mobile']);
-            $client->setCivilite($data['civilite']);
-            $client->setAdresse($data['adresse']);
-            $client->setCodePostal($data['code_postal']);
-            $client->setVille($data['ville']);
-            $client->setPays($data['pays']);*/
-            //dd($client);
-            //dd($form->getData());
-
             $em->persist($client);
             $em->flush();
+
+            $this->addFlash('success', 'Merci pour votre inscription');
+
             return $this->redirectToRoute('merci');
         }
 
@@ -54,6 +40,12 @@ class InscriptionController extends AbstractController
      */
     public function merci(EntityManagerInterface $em, Request $request)
     {
+        $flashbag = $this->get('session')->getFlashBag();
+        $_success = $flashbag->peek('success');
+        if (! (is_array($_success) && count($_success)) ){
+            return $this->redirectToRoute('homepage');
+        }
+
         return $this->render('inscription/merci.html.twig', [
             'controller_name' => 'InscriptionController',
         ]);
