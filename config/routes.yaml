@@ -11,6 +11,11 @@ ouvriruncompte:
   #requirements:
   #  subdomain: m|mobile
 
+merci_prospect:
+  path:       /
+  host:       "ouvrir-un-compte.banquedauphine.online"
+  controller: App\Controller\InscriptionController::merci
+
 clients:
   path:       /
   host:       "clients.banquedauphine.online"
