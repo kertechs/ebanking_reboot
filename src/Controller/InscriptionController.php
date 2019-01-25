@@ -51,14 +51,15 @@ class InscriptionController extends AbstractController
                     )
                     /*
                      * If you also want to include a plaintext version of the message
+                     */
                     ->addPart(
                         $this->renderView(
-                            'emails/registration.txt.twig',
-                            ['name' => $name]
+                            'emails/registration.txt.twig',[
+                                'client' => $client
+                            ]
                         ),
                         'text/plain'
                     )
-                    */
                 ;
                 $mailer->send($message);
             }
