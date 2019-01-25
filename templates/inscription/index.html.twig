@@ -25,22 +25,21 @@
 {% block body %}
     <!-- Container (Contact Section) -->
     <div id="contact" class="container-fluid bg-grey">
-        <form>
-            <div class="row">
+            {#<div class="row">
                 <div class="container">
                     <legend>Rejoignez-Nous</legend>
                     <div class="form-row">
                         <div class="col-md-3 mb-3">
-                            <label for="inputCivilite">Civilité</label>
-                            <select id="inputCivilite" class="form-control">
+                            <label for="client_registration_civilite">Civilité</label>
+                            <select id="client_registration_civilite" name="client_registration_civilite[civilite]" class="form-control">
                                 <option>Sélection</option>
                                 <option>Madame</option>
                                 <option>Monsieur</option>
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="validationCustom01">Prénom</label>
-                            <input type="text" class="form-control" id="validationCustom01">
+                            <label for="client_registration_prenom">Prénom</label>
+                            <input type="text" class="form-control" id="client_registration_prenom" name="client_registration_prenom[prenom]">
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="validationCustom02">Nom</label>
@@ -53,10 +52,10 @@
                             <label for="inputEmail4">E-mail</label>
                             <input type="email" class="form-control" id="inputEmail4">
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="inputPassword4">Mot de passe</label>
-                            <input type="password" class="form-control" id="inputPassword4">
-                        </div>
+                        #}{#<div class="col-md-4 mb-3">#}{#
+                            #}{#<label for="inputPassword4">Mot de passe</label>#}{#
+                            #}{#<input type="password" class="form-control" id="inputPassword4">#}{#
+                        #}{#</div>#}{#
                     </div>
 
                     <div class="form-row">
@@ -81,8 +80,71 @@
             <div class="text-center">
                 <button type="submit" class="btn btn-lg">Envoyer</button>
             </div>
+        #}
 
-        </form>
+        <div class="container">
+            {{ form_start(client_registration_form) }}
+                <legend>Rejoignez-Nous</legend>
+
+                <div class="my-custom-class-for-errors">
+                    {{ form_errors(client_registration_form) }}
+                </div>
+
+                <div class="row">
+                    <div class="col col-md-3 mb-3">
+                        {{ form_label(client_registration_form.civilite) }}
+                        {{ form_widget(client_registration_form.civilite) }}
+                        <small>{{ form_help(client_registration_form.civilite) }}</small>
+                    </div>
+                    <div class="col col-md-4 mb-3">
+                        {{ form_label(client_registration_form.prenom) }}
+                        {{ form_widget(client_registration_form.prenom) }}
+                        <small>{{ form_help(client_registration_form.prenom) }}</small>
+                    </div>
+                    <div class="col col-md-4 mb-3">
+                        {{ form_label(client_registration_form.nom) }}
+                        {{ form_widget(client_registration_form.nom) }}
+                        <small>{{ form_help(client_registration_form.nom) }}</small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col col-md-7 mb-3">
+                        {{ form_label(client_registration_form.adresse) }}
+                        {{ form_widget(client_registration_form.adresse) }}
+                        <small>{{ form_help(client_registration_form.adresse) }}</small>
+                    </div>
+                    <div class="col col-md-2 mb-3">
+                        {{ form_label(client_registration_form.code_postal) }}
+                        {{ form_widget(client_registration_form.code_postal) }}
+                        <small>{{ form_help(client_registration_form.code_postal) }}</small>
+                    </div>
+                    <div class="col col-md-2 mb-3">
+                        {{ form_label(client_registration_form.ville) }}
+                        {{ form_widget(client_registration_form.ville) }}
+                        <small>{{ form_help(client_registration_form.ville) }}</small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col col-md-3 mb-3">
+                        {{ form_label(client_registration_form.email) }}
+                        {{ form_widget(client_registration_form.email) }}
+                        <small>{{ form_help(client_registration_form.email) }}</small>
+                    </div>
+
+                    <div class="col col-md-4 mb-3">
+                        {{ form_label(client_registration_form.mobile) }}
+                        {{ form_widget(client_registration_form.mobile) }}
+                        <small>{{ form_help(client_registration_form.mobile) }}</small>
+                    </div>
+                </div>
+
+                <div class="row text-center" style="padding-top: 15px;">
+                    <button type="submit" class="btn btn-lg">Envoyer</button>
+                </div>
+            </div>
+        {{ form_end(client_registration_form) }}
     </div>
 
     </div>
