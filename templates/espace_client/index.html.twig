@@ -3,23 +3,7 @@
 {% block title %}Espace Client{% endblock %}
 
 {% block navbar %}
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="http://www.banquedauphine.online/"><img src="imgFront/logo-dauphine.png" height="30" width="97" ></a>
-            </div>
-            <div class="collapse navbar-collapse" id="myNavbar">
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="http://www.banquedauphine.online/">ACCUEIL</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    {% include 'espace_client/navbar.html.twig' %}
 {% endblock %}
 
 {% block body %}

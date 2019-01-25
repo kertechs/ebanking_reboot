@@ -14,31 +14,12 @@
     {% endblock %}
 </head>
 <body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
-{% block navbar %}
-<nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/"><img src="imgFront/logo-dauphine.png" height="30" width="97" ></a>
-        </div>
-        <div class="collapse navbar-collapse" id="myNavbar">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="#services">NOS GARANTIES</a></li>
-                <li><a href="#portfolio">NOS PRODUITS</a></li>
-                <li><a href="#pricing">NOS TARIFS</a></li>
-                <li><a href="{{ path('ouvriruncompte2') }}">REJOIGNEZ-NOUS</a></li>
-                <li><a href="{{ path('clients') }}">ESPACE CLIENT</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-{% endblock %}
-{% block body %}{% endblock %}
 
+{% block navbar %}
+    {% include 'navbar.html.twig' %}
+{% endblock %}
+
+{% block body %}{% endblock %}
 
 <footer class="container-fluid text-center">
     <a href="#myPage" title="To Top">
