@@ -1,35 +1,67 @@
 security:
-    encoders:
-        App\Entity\User:
-            algorithm: argon2i
+  encoders:
+    App\Entity\User:
+      algorithm: argon2i
+    App\Entity\BankerUser:
+      algorithm: argon2i
 
-    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
-    providers:
-        # used to reload user from session & other features (e.g. switch_user)
-        app_user_provider:
-            entity:
-                class: App\Entity\User
-                property: email
-    firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
-        main:
-            anonymous: true
-            guard:
-                authenticators:
-                    - App\Security\UserLoginAuthenticator
+  # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+  providers:
+    # used to reload user from session & other features (e.g. switch_user)
+    app_user_provider:
+      entity:
+        class: App\Entity\User
+        property: email
+    app_bankeruser_provider:
+      entity:
+        class: App\Entity\BankerUser
+        property: email
+  firewalls:
+    dev:
+      pattern: ^/(_(profiler|wdt)|css|images|js)/
+      security: false
+    clients:
+      host: ^clients\.banquedauphine\.online
+      provider: app_user_provider
+      logout:
+        path:   clients_logout
+        target: clients_login
+      anonymous: true
+      guard:
+        authenticators:
+          - App\Security\UserLoginAuthenticator
+    backoffice:
+      host: ^backoffice\.banquedauphine\.services
+      provider: app_bankeruser_provider
+      logout:
+        path:   backoffice_logout
+        target: backoffice_login
+      anonymous: true
+      guard:
+        authenticators:
+          - App\Security\BankerLoginAuthenticator
+    main:
+      anonymous: true
 
-            # activate different ways to authenticate
+  # activate different ways to authenticate
 
-            # http_basic: true
-            # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
+      # http_basic: true
+      # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
 
-            # form_login: true
-            # https://symfony.com/doc/current/security/form_login_setup.html
+      # form_login: true
+      # https://symfony.com/doc/current/security/form_login_setup.html
 
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
-    access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+  # Easy way to control access for large sections of your site
+  # Note: Only the *first* access control that matches will be used
+  access_control:
+    - { path: ^/login , roles: [IS_AUTHENTICATED_ANONYMOUSLY, ROLE_USER, ROLE_BANKER]}
+    #- { path: ^/login , roles: [IS_AUTHENTICATED_ANONYMOUSLY, ROLE_USER], host: clients\.banquedauphine\.online}
+    #- { path: ^/login , roles: [IS_AUTHENTICATED_ANONYMOUSLY, ROLE_USER], host: backoffice\.banquedauphine\.services}
+    - { path: ^/logout, roles: [IS_AUTHENTICATED_ANONYMOUSLY, ROLE_USER], host: clients\.banquedauphine\.online}
+    - { path: ^/logout, roles: [IS_AUTHENTICATED_ANONYMOUSLY, ROLE_BANKER], host: backoffice\.banquedauphine\.services}
+    - { path: ^/, roles: ROLE_USER, host: clients\.banquedauphine\.online}
+    - { path: ^/, roles: ROLE_BANKER, host: backoffice\.banquedauphine\.services}
+    # - { path: ^/admin, roles: ROLE_ADMIN }
+    # - { path: ^/profile, roles: ROLE_USER }
+    #- { path: ^/logout, roles: ROLE_USER, host: clients\.banquedauphine\.online }
+    #- { path: ^/, roles: ROLE_USER, host: clients\.banquedauphine\.online }

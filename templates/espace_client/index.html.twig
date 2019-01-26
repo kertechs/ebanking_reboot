@@ -3,11 +3,11 @@
 {% block title %}Espace Client{% endblock %}
 
 {% block navbar %}
-    {% include 'espace_client/navbar.html.twig' %}
+    {% include 'espace_client/navbar_authenticated.html.twig' %}
 {% endblock %}
 
 {% block body %}
-    <div id="contact" class="container-fluid bg-grey">
+   {# <div id="contact" class="container-fluid bg-grey">
         <form>
             <div class="row">
                 <div class="container">
@@ -30,5 +30,10 @@
                 </div>
             </div>
         </form>
+    </div>#}
+
+    <div class="container-fluid" style="padding-top: 55px;">
+        YO
     </div>
+
 {% endblock %}

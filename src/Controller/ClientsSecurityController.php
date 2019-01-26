@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+
+class ClientsSecurityController extends AbstractController
+{
+    /**
+     * @Route(
+     *     "/login",
+     *     name="clients_login",
+     *     host="{domain}",
+     *     defaults={"domain"="clients.banquedauphine.online"},
+     *     requirements={"domain"="clients.banquedauphine.online"}
+     * )
+     */
+    public function login(AuthenticationUtils $authenticationUtils, Request $request, $domain): Response
+    {
+        // get the login error if there is one
+        $error = $authenticationUtils->getLastAuthenticationError();
+        // last username entered by the user
+        $lastUsername = $authenticationUtils->getLastUsername();
+
+        //dd($domain);
+        return $this->render( '/security/'.$domain.'/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
+    }
+}

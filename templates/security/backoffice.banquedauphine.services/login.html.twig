@@ -1,9 +1,9 @@
-{% extends 'base.html.twig' %}
+{% extends 'backoffice/base.html.twig' %}
 
 {% block title %}Connexion{% endblock %}
 
 {% block navbar %}
-    {% include 'espace_client/navbar.html.twig' %}
+    {% include 'backoffice/navbar.html.twig' %}
 {% endblock %}
 
 
@@ -16,9 +16,8 @@
 
     <div class="row">
         <div class="container">
-            <legend>Espace Client</legend>
-
-
+            {#<legend>Espace Client</legend>#}
+            <br />
             <div class="form-group">
                 {#<label for="inputEmail" class="sr-only">Adresse e-mail</label>#}
                 <label for="inputEmail">Adresse e-mail</label>

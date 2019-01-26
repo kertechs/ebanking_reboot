@@ -2,11 +2,10 @@
 
 namespace App\Security;
 
-use App\Entity\User;
+use App\Entity\BankerUser;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -21,7 +20,7 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
-class UserLoginAuthenticator extends AbstractFormLoginAuthenticator
+class BankerLoginAuthenticator extends AbstractFormLoginAuthenticator
 {
     use TargetPathTrait;
 
@@ -46,7 +45,7 @@ class UserLoginAuthenticator extends AbstractFormLoginAuthenticator
 
     public function supports(Request $request)
     {
-        return 'clients_login' === $request->attributes->get('_route')
+        return 'backoffice_login' === $request->attributes->get('_route')
             && $request->isMethod('POST');
     }
 
@@ -72,7 +71,7 @@ class UserLoginAuthenticator extends AbstractFormLoginAuthenticator
             throw new InvalidCsrfTokenException();
         }
 
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $credentials['email']]);
+        $user = $this->entityManager->getRepository(BankerUser::class)->findOneBy(['email' => $credentials['email']]);
 
         if (!$user) {
             // fail authentication with a custom error
@@ -95,12 +94,12 @@ class UserLoginAuthenticator extends AbstractFormLoginAuthenticator
 
         // For example : return new RedirectResponse($this->urlGenerator->generate('some_route'));
         //throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
-        return new RedirectResponse($this->urlGenerator->generate('clients'));
+        return new RedirectResponse($this->urlGenerator->generate('bankers'));
     }
 
     protected function getLoginUrl()
     {
         //dd($this->request);
-        return $this->urlGenerator->generate('clients_login');
+        return $this->urlGenerator->generate('backoffice_login');
     }
 }

@@ -2,6 +2,11 @@
 #    path: /
 #    controller: App\Controller\DefaultController::index
 
+bankers:
+  path:       /
+  host:       "backoffice.banquedauphine.services"
+  controller: App\Controller\BackOfficeController::index
+
 ouvriruncompte:
   path:       /
   host:       "ouvrir-un-compte.banquedauphine.online"
@@ -25,11 +30,38 @@ clients:
   #requirements:
   #  subdomain: m|mobile
 
-clients_login:
-  path:       /connexion
-  host:       "clients.banquedauphine.online"
-  controller: App\Controller\EspaceClientController::login
+#clients_login:
+  #  path:       /login
+  #host:       "clients.banquedauphine.online"
+  #controller: App\Controller\EspaceClientController::login
 
+clients_virement_new:
+  path:       /virements/nouveau
+  host:       "clients.banquedauphine.online"
+  controller: App\Controller\EspaceClientController::new_virement
+
+clients_virement_beneficiaire_new:
+  path:       /virements/beneficiaires/ajout
+  host:       "clients.banquedauphine.online"
+  controller: App\Controller\EspaceClientController::new_beneficiaire
+
+clients_compte_details:
+  path:       /comptes/{num_compte}
+  host:       "clients.banquedauphine.online"
+  controller: App\Controller\EspaceClientController::detail_compte
+
+clients_logout:
+  path:       /logout
+  host:       "clients.banquedauphine.online"
+  #host:       {domain}
+  #defaults:
+  #  domain: "clients.banquedauphine.online"
+  #requirements:
+  #  domain: "clients.banquedauphine.online|backoffice.banquedauphine.services"
+
+backoffice_logout:
+  path:       /logout
+  host:       "backoffice.banquedauphine.services"
 
 homepage:
   path:       /

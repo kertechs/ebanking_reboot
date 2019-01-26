@@ -16,4 +16,18 @@ class EspaceClientController extends AbstractController
             'controller_name' => 'EspaceClientController',
         ]);
     }
+
+    public function new_virement()
+    {
+        return $this->render('espace_client/virements/nouveau.html.twig', [
+            'controller_name' => 'EspaceClientController',
+        ]);
+    }
+
+    public function new_beneficiaire()
+    {
+        return $this->render('espace_client/virements/beneficiaires/nouveau.html.twig', [
+            'controller_name' => 'EspaceClientController',
+        ]);
+    }
 }
