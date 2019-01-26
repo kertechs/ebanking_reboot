@@ -14,4 +14,9 @@ class BackOfficeController extends AbstractController
             'context_entry' => 'Accueil'
         ]);
     }
+
+    public function dashboard()
+    {
+
+    }
 }
