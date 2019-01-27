@@ -30,6 +30,20 @@
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300' rel='stylesheet' type='text/css'>
     <link href="assetsBack/css/pe-icon-7-stroke.css" rel="stylesheet" />
+
+    {% endblock %}
+
+    {% block dhtmlx %}
+        <!-- DhtmlX -->
+        <link rel="stylesheet" type="text/css" href="/assetsBack/js/dhtmlx/codebase/fonts/font_roboto/roboto.css"/>
+        <link rel="stylesheet" type="text/css" href="/assetsBack/js/dhtmlx/codebase/dhtmlx.css"/>
+        <script src="/assetsBack/js/dhtmlx/codebase/dhtmlx.js"></script>
+    {% endblock %}
+
+    {% block jquery %}
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
+        <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+        <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
     {% endblock %}
 
 </head>
@@ -46,46 +60,7 @@
                 </a>
             </div>
 
-            {% block navbar %}
-            <ul class="nav">
-                <li>
-                    <a href="BackOffice.html">
-                        <i class="pe-7s-graph"></i>
-                        <p>Back Office</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="Gestionnaires.html">
-                        <i class="pe-7s-user"></i>
-                        <p>Gestionnaires</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="ComptesClients.html">
-                        <i class="pe-7s-id"></i>
-                        <p>Comptes Clients</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="Virement.html">
-                        <i class="pe-7s-credit"></i>
-                        <p>Effectuer un Virement</p>
-                    </a>
-                </li>
-                <li class="active">
-                    <a href="BDD.html">
-                        <i class="pe-7s-search"></i>
-                        <p>Base de Données</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="PlateformeTechnique.html">
-                        <i class="pe-7s-settings"></i>
-                        <p>Plateforme Technique</p>
-                    </a>
-                </li>
-            </ul>
-            {% endblock %}
+            {% block navbar %}{% endblock %}
         </div>
     </div>
 
@@ -108,15 +83,15 @@
                         </li>
                     </ul>#}
 
-                    {#<ul class="nav navbar-nav navbar-right">
+                    <ul class="nav navbar-nav navbar-right">
 
                         <li>
-                            <a href="IndexBack.php">
+                            <a href="{{ path('backoffice_logout') }}">
                                 <p>Se déconnecter</p>
                             </a>
                         </li>
                         <li class="separator hidden-lg"></li>
-                    </ul>#}
+                    </ul>
                 </div>
             </div>
             <div class="content">

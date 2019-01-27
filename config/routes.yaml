@@ -1,11 +1,47 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+######################################################################
+# Espace Gestionnaires (backoffice)
+######################################################################
 
 bankers:
   path:       /
   host:       "backoffice.banquedauphine.services"
   controller: App\Controller\BackOfficeController::index
+
+bankers_validate_registration:
+  path:       /validateRegistration/{client_id}/{decision}
+  host:       "backoffice.banquedauphine.services"
+  controller: App\Controller\BackOfficeController::validateRegistration
+  requirements:
+    client_id: '\d+'
+    decision: 'OK|KO'
+
+bankers_comptes_clients:
+  path:       /comptes_clients
+  host:       "backoffice.banquedauphine.services"
+  controller: App\Controller\BackOfficeController::comptes
+
+bankers_virements:
+  path:       /virements
+  host:       "backoffice.banquedauphine.services"
+  controller: App\Controller\BackOfficeController::virements
+
+bankers_bdd:
+  path:       /bdd
+  host:       "backoffice.banquedauphine.services"
+  controller: App\Controller\BackOfficeController::bdd
+
+bankers_plateforme_technique:
+  path:       /plateforme
+  host:       "backoffice.banquedauphine.services"
+  controller: App\Controller\BackOfficeController::plateforme
+
+backoffice_logout:
+  path:       /logout
+  host:       "backoffice.banquedauphine.services"
+
+######################################################################
+# Espace clients
+######################################################################
 
 ouvriruncompte:
   path:       /
@@ -25,15 +61,6 @@ clients:
   path:       /
   host:       "clients.banquedauphine.online"
   controller: App\Controller\EspaceClientController::index
-  #defaults:
-  #  subdomain: m
-  #requirements:
-  #  subdomain: m|mobile
-
-#clients_login:
-  #  path:       /login
-  #host:       "clients.banquedauphine.online"
-  #controller: App\Controller\EspaceClientController::login
 
 clients_virement_new:
   path:       /virements/nouveau
@@ -53,20 +80,11 @@ clients_compte_details:
 clients_logout:
   path:       /logout
   host:       "clients.banquedauphine.online"
-  #host:       {domain}
-  #defaults:
-  #  domain: "clients.banquedauphine.online"
-  #requirements:
-  #  domain: "clients.banquedauphine.online|backoffice.banquedauphine.services"
 
-backoffice_logout:
-  path:       /logout
-  host:       "backoffice.banquedauphine.services"
+######################################################################
+# Site public
+######################################################################
 
 homepage:
   path:       /
   controller: App\Controller\MainController::index
-
-ouvriruncompte2:
-  path:       /ouvrir-un-compte
-  controller: App\Controller\InscriptionController::index

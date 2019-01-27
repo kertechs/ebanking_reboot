@@ -1,36 +1,38 @@
+{% import "_macros.html" as macros %}
+
 <ul class="nav">
-    <li>
-        <a href="BackOffice.html">
+    <li class="{{ macros.is_active('bankers') }}">
+        <a href="{{ path('bankers') }}">
             <i class="pe-7s-graph"></i>
             <p>Back Office</p>
         </a>
     </li>
-    <li>
-        <a href="Gestionnaires.html">
+    {#<li class="{{ macros.is_active('profil') }}">
+        <a href="{{ path('profil') }}">
             <i class="pe-7s-user"></i>
             <p>Gestionnaires</p>
         </a>
-    </li>
-    <li>
-        <a href="ComptesClients.html">
+    </li>#}
+    <li class="{{ macros.is_active('bankers_comptes_clients') }}">
+        <a href="{{ path('bankers_comptes_clients') }}">
             <i class="pe-7s-id"></i>
             <p>Comptes Clients</p>
         </a>
     </li>
-    <li>
-        <a href="Virement.html">
+    <li class="{{ macros.is_active('bankers_virements') }}">
+        <a href="{{ path('bankers_virements') }}">
             <i class="pe-7s-credit"></i>
             <p>Effectuer un Virement</p>
         </a>
     </li>
-    <li class="active">
-        <a href="BDD.html">
+    {#<li class="{{ macros.is_active('bankers_bdd') }}">
+        <a href="{{ path('bankers_bdd') }}">
             <i class="pe-7s-search"></i>
             <p>Base de Données</p>
         </a>
-    </li>
-    <li>
-        <a href="PlateformeTechnique.html">
+    </li>#}
+    <li class="{{ macros.is_active('bankers_plateforme_technique') }}">
+        <a href="{{ path('bankers_plateforme_technique') }}">
             <i class="pe-7s-settings"></i>
             <p>Plateforme Technique</p>
         </a>

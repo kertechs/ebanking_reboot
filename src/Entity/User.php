@@ -43,14 +43,14 @@ class User implements UserInterface
     private $password;
 
     /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Client", fetch="EAGER", inversedBy="user", cascade={"persist", "remove"})
+     */
+    private $client;
+
+    /**
      * @ORM\Column(type="integer", nullable=true)
      */
     private $client_id;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getEmail(): ?string
     {
@@ -125,6 +125,11 @@ class User implements UserInterface
         // $this->plainPassword = null;
     }
 
+    public function getClient(): ?Client
+    {
+        return $this->client;
+    }
+
     public function getClientId(): ?int
     {
         return $this->client_id;
@@ -135,5 +140,17 @@ class User implements UserInterface
         $this->client_id = $client_id;
 
         return $this;
+    }
+
+    public function setClient(?Client $client): self
+    {
+        $this->client = $client;
+
+        return $this;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 }

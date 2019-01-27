@@ -2,8 +2,14 @@ security:
   encoders:
     App\Entity\User:
       algorithm: argon2i
+      memory_cost: 1024
+      time_cost: 2
+      threads: 2
     App\Entity\BankerUser:
       algorithm: argon2i
+      memory_cost: 1024
+      time_cost: 2
+      threads: 2
 
   # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
   providers:

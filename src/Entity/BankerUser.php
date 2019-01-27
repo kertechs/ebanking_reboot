@@ -43,10 +43,10 @@ class BankerUser implements UserInterface
     private $password;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\OneToOne(targetEntity="App\Entity\Bankers", cascade={"persist", "remove"})
      */
     private $banker_id;
-
+    
     public function getId(): ?int
     {
         return $this->id;

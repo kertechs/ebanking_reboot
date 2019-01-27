@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Blameable\Traits\BlameableEntity;
 use Gedmo\IpTraceable\Traits\IpTraceableEntity;
@@ -79,6 +81,16 @@ class Client
      */
     private $civilite;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Comptes", fetch="EAGER", mappedBy="compte_client_id")
+     */
+    private $comptes;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\User", fetch="EAGER", mappedBy="client", cascade={"persist", "remove"})
+     */
+    private $user;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -87,6 +99,7 @@ class Client
     public function __construct()
     {
         $this->setCreatedAt(new \DateTime());
+        $this->comptes = new ArrayCollection();
         //$this->setCreatedBy();
     }
 
@@ -209,4 +222,51 @@ class Client
 
         return $this;
     }
+
+
+    /**
+     * @return Collection|Comptes[]
+     */
+    public function getComptes(): Collection
+    {
+        return $this->comptes;
+    }
+
+    public function addCompte(Comptes $compte): self
+    {
+        if (!$this->comptes->contains($compte)) {
+            $this->comptes[] = $compte;
+            $compte->addCompteClientId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompte(Comptes $compte): self
+    {
+        if ($this->comptes->contains($compte)) {
+            $this->comptes->removeElement($compte);
+            $compte->removeCompteClientId($this);
+        }
+
+        return $this;
+    }
+
+    /*public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newClient_id = $user === null ? null : $this;
+        if ($newClient_id !== $user->getClientId()) {
+            $user->setClientId($newClient_id);
+        }
+
+        return $this;
+    }*/
 }

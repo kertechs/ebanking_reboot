@@ -19,6 +19,21 @@ class ClientRepository extends ServiceEntityRepository
         parent::__construct($registry, Client::class);
     }
 
+    /*
+     * @return Client[]
+     */
+    public function findAllProspects()
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.deletedAt IS NULL')
+            ->andWhere('c.status = 100')
+            //->setParameter('val', $value)
+            ->orderBy('c.id', 'ASC')
+            ->setMaxResults(100)
+            ->getQuery()
+            ->getResult();
+    }
+
     // /**
     //  * @return Client[] Returns an array of Client objects
     //  */

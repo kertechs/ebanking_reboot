@@ -9,6 +9,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+// Include Dompdf required namespaces
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 
 class InscriptionController extends AbstractController
 {
@@ -21,6 +27,11 @@ class InscriptionController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $client = $form->getData();
+            $client->setCreatedBy($client->getEmail());
+            $client->setUpdatedBy($client->getEmail());
+            $client->setCreatedFromIp($request->getClientIp());
+            $client->setUpdatedFromIp($request->getClientIp());
+
 
             $EmailAlreadyExist = $em->getRepository(Client::class)->createQueryBuilder('C')
                 ->where('C.email = :_ClientEmail')
