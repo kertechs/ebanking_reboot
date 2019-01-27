@@ -91,6 +91,21 @@ class Client
      */
     private $user;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $has_cb;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $has_chequier;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Demandes", mappedBy="client")
+     */
+    private $demandes;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -98,8 +113,11 @@ class Client
 
     public function __construct()
     {
+        $this->has_cb = false;
+        $this->has_chequier = false;
         $this->setCreatedAt(new \DateTime());
         $this->comptes = new ArrayCollection();
+        $this->demandes = new ArrayCollection();
         //$this->setCreatedBy();
     }
 
@@ -247,6 +265,61 @@ class Client
         if ($this->comptes->contains($compte)) {
             $this->comptes->removeElement($compte);
             $compte->removeCompteClientId($this);
+        }
+
+        return $this;
+    }
+
+    public function getHasCb(): ?bool
+    {
+        return $this->has_cb;
+    }
+
+    public function setHasCb(?bool $has_cb): self
+    {
+        $this->has_cb = $has_cb;
+
+        return $this;
+    }
+
+    public function getHasChequier(): ?bool
+    {
+        return $this->has_chequier;
+    }
+
+    public function setHasChequier(?bool $has_chequier): self
+    {
+        $this->has_chequier = $has_chequier;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Demandes[]
+     */
+    public function getDemandes(): Collection
+    {
+        return $this->demandes;
+    }
+
+    public function addDemande(Demandes $demande): self
+    {
+        if (!$this->demandes->contains($demande)) {
+            $this->demandes[] = $demande;
+            $demande->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDemande(Demandes $demande): self
+    {
+        if ($this->demandes->contains($demande)) {
+            $this->demandes->removeElement($demande);
+            // set the owning side to null (unless already changed)
+            if ($demande->getClient() === $this) {
+                $demande->setClient(null);
+            }
         }
 
         return $this;

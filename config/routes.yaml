@@ -62,6 +62,13 @@ clients:
   host:       "clients.banquedauphine.online"
   controller: App\Controller\EspaceClientController::index
 
+clients_compte_details:
+  path:       /comptes/{compte_id}
+  requirements:
+    compte_id: '\d+'
+  host:       "clients.banquedauphine.online"
+  controller: App\Controller\EspaceClientController::detail_compte
+
 clients_virement_new:
   path:       /virements/nouveau
   host:       "clients.banquedauphine.online"
@@ -72,10 +79,21 @@ clients_virement_beneficiaire_new:
   host:       "clients.banquedauphine.online"
   controller: App\Controller\EspaceClientController::new_beneficiaire
 
-clients_compte_details:
-  path:       /comptes/{num_compte}
+clients_commander_chequier:
+  path:       /commander/chequier/{confirm}
   host:       "clients.banquedauphine.online"
-  controller: App\Controller\EspaceClientController::detail_compte
+  controller: App\Controller\EspaceClientController::commander
+  defaults:
+    article: "chequier"
+    confirm: null
+
+clients_commander_cb:
+  path:       /commander/cb/{confirm}
+  host:       "clients.banquedauphine.online"
+  controller: App\Controller\EspaceClientController::commander
+  defaults:
+    article: "cb"
+    confirm: null
 
 clients_logout:
   path:       /logout
@@ -88,3 +106,9 @@ clients_logout:
 homepage:
   path:       /
   controller: App\Controller\MainController::index
+
+ouvriruncompte2:
+  path:       /ouvrir-un-compte
+  #host:       "ouvrir-un-compte.banquedauphine.online"
+  controller: App\Controller\InscriptionController::index
+

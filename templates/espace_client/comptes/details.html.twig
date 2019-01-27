@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace Client{% endblock %}
+
+{% block navbar %}
+    {% include 'espace_client/navbar_authenticated.html.twig' %}
+{% endblock %}
+
+{% block body %}
+   <div class="container-fluid bg-grey" style="padding-top: 55px;">
+       <div class="row">&nbsp;<br />&nbsp;</div>
+       <div id="content">
+           <div class="container">
+               <legend>{{ compte.typeLbl }}</legend>
+               <br />
+
+               <table id="detail_operations" class="table table-striped" style="width: 100%;">
+                   <thead>
+                   <tr>
+                       <th scope="col">Date d'opération</th>
+                       <th scope="col">Type d'opération</th>
+                       <th scope="col">Détails</th>
+                       <th scope="col">Montant</th>
+                   </tr>
+
+                   <tbody>
+                   {% for operation in operations %}
+                       <tr>
+                           <td>{{ operation.dateExecution | date("d/m/Y") }}</td>
+                           <td>{{ operation.typeOperationLbl }}</td>
+                           <td>{{ operation.details }}</td>
+                           <td>
+                               {% if (operation.emetteurCompteId == compte.id ) %}-{% endif %}
+                               {{ operation.montant|number_format(2, ',', ' ') }} €
+                           </td>
+                       </tr>
+                   {% endfor %}
+                   </tbody>
+
+                   <tfoot>
+                   </tfoot>
+                   </thead>
+               </table>
+
+               <script>
+                   $('#detail_operations').DataTable({
+                       "language": {
+                           "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+                       }
+                       ,"dom": '<"top"if>rt<"bottom"lp><"clear">'
+                   });
+               </script>
+
+               {#<table class="table table-striped">
+                   <thead>
+                   <tr>
+                        <th scope="col">Date d'opération</th>
+                        <th scope="col">Nom d'opération</th>
+                        <th scope="col">Montant</th>
+                    </tr>
+                   </thead>
+
+                   <tbody>
+
+                       <tr>
+                            <td>25/11/2018</td>
+                            <td>Retrait CB</td>
+                            <td>100,00</td>
+                       </tr>
+
+                       <tr>
+                            <td>26/11/2018</td>
+                            <td>Retrait CB</td>
+                            <td>200,00</td>
+                       </tr>
+
+                       <tr>
+                            <td>27/11/2018</td>
+                            <td>Retrait CB</td>
+                            <td>50,00</td>
+                       </tr>
+
+                    </tbody>
+                </table>#}
+           </div>
+       </div>
+   </div>
+{% endblock %}

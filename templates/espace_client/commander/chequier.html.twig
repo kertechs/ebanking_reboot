@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace Client{% endblock %}
+
+{% block navbar %}
+    {% include 'espace_client/navbar_authenticated.html.twig' %}
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid bg-grey" style="padding-top: 55px;">
+        <div class="row">&nbsp;<br />&nbsp;</div>
+        <div id="content" style="width: 70%;">
+            <div class="container" style="text-align: center; clear: both; padding-top: 150px;">
+                <a href="{{ path('clients_commander_chequier', {confirm: true}) }}">
+                    <button class="btn btn-warning">Confirmer la demande</button>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

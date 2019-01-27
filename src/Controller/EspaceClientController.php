@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Client;
+use App\Entity\Comptes;
+use App\Entity\Operations;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,30 +34,91 @@ class EspaceClientController extends AbstractController
             ->getRepository(Client::class)
             ->find($client_id)
         ;
-        $comptes = $client->getComptes();
-
         dump($client);
-        dump($comptes);
 
-        /*$client = $this->em->find(Client::class, $this->getUser()->getClientId());
-        dd($client);*/
+        $comptes = $client->getComptes();
+        dump($comptes);
 
         return $this->render('espace_client/index.html.twig', [
             'controller_name' => 'EspaceClientController',
+            'client' => $client,
+            'comptes' => $comptes,
         ]);
+    }
+
+    public function detail_compte($compte_id)
+    {
+        $client_user = $this->getUser();
+        $client_id = $client_user->getClientId();
+        $client = $this->getDoctrine()
+            ->getRepository(Client::class)
+            ->find($client_id)
+        ;
+        $comptes = $client->getComptes();
+        foreach ($comptes as $compte)
+        {
+            if ($compte->getId() == $compte_id) //User is owner of the account
+            {
+                $operations = $this->getDoctrine()
+                    ->getRepository(Operations::class)
+                    ->findByCompte($compte);
+                dump($operations);
+
+                return $this->render('espace_client/comptes/details.html.twig', [
+                    'controller_name' => 'EspaceClientController',
+                    'client' => $client,
+                    'compte' => $compte,
+                    'operations' => $operations,
+                ]);
+                break;
+            }
+        }
+
+        return $this->redirectToRoute('clients_logout');
     }
 
     public function new_virement()
     {
+        $client_user = $this->getUser();
+        $client_id = $client_user->getClientId();
+        $client = $this->getDoctrine()
+            ->getRepository(Client::class)
+            ->find($client_id)
+        ;
+
         return $this->render('espace_client/virements/nouveau.html.twig', [
             'controller_name' => 'EspaceClientController',
+            'client' => $client,
         ]);
     }
 
     public function new_beneficiaire()
     {
+        $client_user = $this->getUser();
+        $client_id = $client_user->getClientId();
+        $client = $this->getDoctrine()
+            ->getRepository(Client::class)
+            ->find($client_id)
+        ;
+
         return $this->render('espace_client/virements/beneficiaires/nouveau.html.twig', [
             'controller_name' => 'EspaceClientController',
+            'client' => $client,
+        ]);
+    }
+
+    public function commander($article)
+    {
+        $client_user = $this->getUser();
+        $client_id = $client_user->getClientId();
+        $client = $this->getDoctrine()
+            ->getRepository(Client::class)
+            ->find($client_id)
+        ;
+
+        return $this->render('espace_client/commander/'.$article.'.html.twig', [
+            'controller_name' => 'EspaceClientController',
+            'client' => $client,
         ]);
     }
 }

@@ -25,6 +25,12 @@ class Comptes
     const COMPTE_EPARGNE = "COMPTE_EPARGNE";
     const COMPTE_JOINT = "COMPTE_JOINT";
 
+    const COMPTES_LABELS = [
+        self::COMPTE_COURANT => "Compte Courant",
+        self::COMPTE_EPARGNE => "Compte Epargne",
+        self::COMPTE_JOINT => "Compte Joint",
+    ];
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -104,6 +110,11 @@ class Comptes
     public function getType(): ?string
     {
         return $this->type;
+    }
+
+    public function getTypeLbl(): ?string
+    {
+        return self::COMPTES_LABELS[$this->type];
     }
 
     public function setType(?string $type): self

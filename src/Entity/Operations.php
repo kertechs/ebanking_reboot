@@ -8,7 +8,6 @@ use Gedmo\Blameable\Traits\BlameableEntity;
 use Gedmo\IpTraceable\Traits\IpTraceableEntity;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
-use phpDocumentor\Reflection\Types\Boolean;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\OperationsRepository")
@@ -20,11 +19,21 @@ class Operations
     use SoftDeleteableEntity;
     use TimestampableEntity;
 
+    const TYPE_RETRAIT= "TYPE_RETRAIT";
     const TYPE_VIREMENT = "TYPE_VIREMENT";
     const TYPE_CHEQUE = "TYPE_CHEQUE";
     const TYPE_CB = "TYPE_CB_IMMEDIAT";
     const TYPE_CB_DIFFERE = "TYPE_CB_DIFFERE";
     const TYPE_FRAIS = "TYPE_FRAIS";
+
+    const TYPES_LABELS = [
+        self::TYPE_RETRAIT => "Retrait espèces",
+        self::TYPE_VIREMENT => "Virement banquaire",
+        self::TYPE_CHEQUE => "Chèque",
+        self::TYPE_CB => "Paiement CB",
+        self::TYPE_CB_DIFFERE => "Paiement CB débit différé",
+        self::TYPE_FRAIS => "Frais banquaires",
+    ];
 
     /**
      * @ORM\Id()
@@ -63,6 +72,11 @@ class Operations
      */
     private $destinataire_compte_id;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $details;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -83,6 +97,11 @@ class Operations
     public function getTypeOperation(): ?string
     {
         return $this->type_operation;
+    }
+
+    public function getTypeOperationLbl(): ?string
+    {
+        return self::TYPES_LABELS[$this->type_operation];
     }
 
     public function setTypeOperation(?string $type_operation): self
@@ -179,6 +198,18 @@ class Operations
                 return false;
             }
         }
+
+        return $this;
+    }
+
+    public function getDetails(): ?string
+    {
+        return $this->details;
+    }
+
+    public function setDetails(?string $details): self
+    {
+        $this->details = $details;
 
         return $this;
     }

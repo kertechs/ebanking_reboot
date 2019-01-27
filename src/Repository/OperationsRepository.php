@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Comptes;
 use App\Entity\Operations;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -17,6 +18,23 @@ class OperationsRepository extends ServiceEntityRepository
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, Operations::class);
+    }
+
+    /**
+     * @return Operations[] Returns an array of Operations objects
+     */
+    public function findByCompte(Comptes $compte)
+    {
+        return $this->createQueryBuilder('o')
+            ->andWhere('o.emetteur_compte_id = :emetteur_compte_id OR o.destinataire_compte_id = :destinataire_compte_id')
+            ->andWhere('o.deletedAt IS NULL')
+            ->setParameter('emetteur_compte_id', $compte->getId())
+            ->setParameter('destinataire_compte_id', $compte->getId())
+            ->orderBy('o.id', 'ASC')
+            //->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+            ;
     }
 
     // /**
