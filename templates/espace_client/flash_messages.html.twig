@@ -1,0 +1,26 @@
+{% if app.session.flashbag.peek('success')|length > 0 %}
+    <div class="alert alert-success">
+        {% for message in app.flashes('success') %}
+            {{ message }}<br />
+        {% endfor %}
+    </div>
+{% else %}
+{% endif %}
+
+{% if app.session.flashbag.peek('warning')|length > 0 %}
+    <div class="alert alert-warning">
+        {% for message in app.flashes('warning') %}
+            {{ message }}<br />
+        {% endfor %}
+    </div>
+{% else %}
+{% endif %}
+
+{% if app.session.flashbag.peek('error')|length > 0 %}
+    <div class="alert alert-danger">
+        {% for message in app.flashes('error') %}
+            {{ message }}
+        {% endfor %}
+    </div>
+{% else %}
+{% endif %}

@@ -7,14 +7,27 @@
 {% endblock %}
 
 {% block body %}
+    {% block flash_messages %}
+        {% include 'espace_client/flash_messages.html.twig' %}
+    {% endblock %}
+
     <div class="container-fluid bg-grey" style="padding-top: 55px;">
         <div class="row">&nbsp;<br />&nbsp;</div>
-        <div id="content" style="width: 70%;">
-            <div class="container" style="text-align: center; clear: both; padding-top: 150px;">
-                <a href="{{ path('clients_commander_chequier', {confirm: true}) }}">
-                    <button class="btn btn-warning">Confirmer la demande</button>
-                </a>
+        {% if ( has_demande ) %}
+            <div id="content" style="width: 70%;" class="alert alert-warning">
+                Vous avez déjà une demande enregistrée.<br />
+                Nous revenons vers vous très prochainement.<br />
             </div>
-        </div>
+        {% else %}
+            <div id="content" style="width: 70%;">
+                <div class="container" style="text-align: center; clear: both; padding-top: 150px;">
+                    <a href="{{ path('clients_commander_chequier', {confirm: true}) }}">
+                        <button class="btn btn-warning">Confirmer la demande</button>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
     </div>
+    </div>
+
 {% endblock %}

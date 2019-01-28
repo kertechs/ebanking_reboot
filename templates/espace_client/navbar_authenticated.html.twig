@@ -13,16 +13,18 @@
                         <span class="hidden-xs">Consulter mes comptes</span>
                     </a>
                 </li>
+
                 <li class="dropdown {{ macros.is_active('clients_virement_new') }} {{ macros.is_active('clients_virement_beneficiaire_new') }}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Virements<b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li class="{{ macros.is_active('clients_virement_new') }}">
                             <a href="{{ path('clients_virement_new') }}" title="Faire un virement" style="color: black!important;">
                                 <i class="fa fa-tachometer" aria-hidden="true"></i>
-                                <span class="hidden-xs">Faire un virement</span></a>
+                                <span class="hidden-xs">Faire un virement</span>
+                            </a>
                         </li>
                         <li {{ macros.is_active('clients_virement_beneficiaire_new') }}">
-                            <a href="{{ path('clients_virement_beneficiaire_new') }}" title="Ajouter un bénéficiaire" style="color: black!important;">
+                            <a href="{{ path('clients_demander', {article: 'beneficiaire-virement'}) }}" title="Ajouter un bénéficiaire" style="color: black!important;">
                                 <i class="fa fa-tachometer" aria-hidden="true"></i>
                                 <span class="hidden-xs">Ajouter un bénéficiaire</span>
                             </a>
@@ -30,9 +32,61 @@
                     </ul>
                 </li>
 
-                {% if (client.hasChequier == false) %}
-                <li class="{{ macros.is_active('clients_commander_chequier') }}">
-                    <a href="{{ path('clients_commander_chequier') }}" title="Demander un chéquier" >
+                <li class="dropdown
+                    {{ macros.is_active('client_demander') }}"
+                >
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Demandes<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        {% if (client.hasDecouvertAutorise == false) %}
+                            <li>
+                                <a href="{{ path('clients_demander', {article: 'autorisation-decouvert'}) }}" title="Demander une autorisation de découvert" style="color: black!important;">
+                                    <i class="fa fa-tachometer" aria-hidden="true"></i>
+                                    <span class="hidden-xs">Demander une autorisation de découvert</span>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% if (client.hasCompteEpargne == false) %}
+                            <li>
+                                <a href="{{ path('clients_demander', {article: 'compte-epargne'}) }}" title="Demander l'ouverture d'un compte épargne" style="color: black!important;">
+                                    <i class="fa fa-tachometer" aria-hidden="true"></i>
+                                    <span class="hidden-xs">Demander l'ouverture d'un compte épargne</span>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% if (client.hasCompteJoint == false) %}
+                            <li>
+                                <a href="{{ path('clients_demander', {article: 'compte-joint'}) }}" title="Demander l'ouverture d'un compte joint" style="color: black!important;">
+                                    <i class="fa fa-tachometer" aria-hidden="true"></i>
+                                    <span class="hidden-xs">Demander l'ouverture d'un compte joint</span>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% if (client.hasChequier == false) %}
+                            <li>
+                                <a href="{{ path('clients_demander', {article: 'chequier'}) }}" title="Demander un chéquier" style="color: black!important;">
+                                    <i class="fa fa-tachometer" aria-hidden="true"></i>
+                                    <span class="hidden-xs">Demander un chéquier</span>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% if (client.hasCb == false) %}
+                            <li>
+                                <a href="{{ path('clients_demander', {article: 'cb'}) }}" title="Demander une CB" style="color: black!important;">
+                                    <i class="fa fa-tachometer" aria-hidden="true"></i>
+                                    <span class="hidden-xs">Demander une CB</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+
+                {#{% if (client.hasCb == false) %}
+                <li class="{{ macros.is_active('clients_commander_cb') }}">
+                    <a href="{{ path('clients_commander_cb') }}" title="Demander une CB" style="color: black!important;">
                         <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                         <span class="hidden-xs">Demander un chéquier</span>
                     </a>
@@ -46,7 +100,7 @@
                         <span class="hidden-xs">Demander une CB</span>
                     </a>
                 </li>
-                {% endif %}
+                {% endif %}#}
 
                 <li>
                     <a href="/logout" title="Se déconnecter" >

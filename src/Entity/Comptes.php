@@ -26,9 +26,9 @@ class Comptes
     const COMPTE_JOINT = "COMPTE_JOINT";
 
     const COMPTES_LABELS = [
-        self::COMPTE_COURANT => "Compte Courant",
-        self::COMPTE_EPARGNE => "Compte Epargne",
-        self::COMPTE_JOINT => "Compte Joint",
+        self::COMPTE_COURANT => "Compte courant",
+        self::COMPTE_EPARGNE => "Compte épargne",
+        self::COMPTE_JOINT => "Compte joint",
     ];
 
     /**

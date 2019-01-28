@@ -19,6 +19,22 @@ class DemandesRepository extends ServiceEntityRepository
         parent::__construct($registry, Demandes::class);
     }
 
+    /**
+     * @return Demandes[] Returns an array of Demandes objects
+     */
+    public function findByTypeByClient($type, $client_id)
+    {
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.client = :client_id')
+            ->andWhere('d.type = :type')
+            ->andWhere('d.deletedAt IS NULL')
+            ->setParameter('client_id', $client_id)
+            ->setParameter('type', $type)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
     // /**
     //  * @return Demandes[] Returns an array of Demandes objects
     //  */

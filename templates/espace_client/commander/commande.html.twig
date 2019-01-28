@@ -1,0 +1,132 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace Client{% endblock %}
+
+{% block navbar %}
+    {% include 'espace_client/navbar_authenticated.html.twig' %}
+{% endblock %}
+
+{% block body %}
+    <style>
+        .user-input-wrp {
+            position: relative;
+            width: 50%;
+        }
+        .user-input-wrp .inputText{
+            width: 200px;
+            outline: none;
+            border:none;
+            border-bottom: 1px solid #777;
+        }
+        .user-input-wrp .inputText:invalid {
+            box-shadow: none !important;
+        }
+        .user-input-wrp .inputText:focus{
+            border-color: blue;
+            border-width: medium medium 2px;
+        }
+        .user-input-wrp .floating-label {
+            position: absolute;
+            pointer-events: none;
+            top: 18px;
+            left: 10px;
+            transition: 0.2s ease all;
+        }
+        .user-input-wrp input:focus ~ .floating-label,
+        .user-input-wrp input:not(:focus):valid ~ .floating-label{
+            top: 0px;
+            left: 10px;
+            font-size: 13px;
+            opacity: 1;
+        }
+    </style>
+
+    <div class="container-fluid bg-grey" style="padding-top: 55px;">
+        {% block flash_messages %}
+            {% include 'espace_client/flash_messages.html.twig' %}
+        {% endblock %}
+
+
+        <div class="row">&nbsp;<br />&nbsp;</div>
+        {% if ( has_demande and is_success == false and confirm == false and _article != 'beneficiaire-virement' ) %}
+        <div id="content" style="width: 70%;" class="alert alert-warning">
+            Vous avez déjà une demande enregistrée.<br />
+            Nous revenons vers vous très prochainement.<br />
+        </div>
+        {% elseif confirm == true %}
+        {% else %}
+            {% if _article == 'beneficiaire-virement' %}
+                <div class="row">
+                    <form method="POST">
+                        <label for="beneficiaire">Bénéficiaire</label>
+                        <input type="text" id="beneficiaire" name="beneficiaire" style="width: 250px;"/>
+
+                        <br />
+
+                        <label for="iban">IBAN</label>
+
+                        <table border="0" valign="middle">
+                            <tr>
+                                <td>
+                                    <div class="user-input-wrp">
+                                        <br/>
+                                        <input type="text" class="inputText" id="code_bank" name="code_bank" required maxlength="5"/>
+                                        <span class="floating-label">Code banque</span>
+                                    </div>
+                                </td>
+
+                                <td valign="middle" style="font-weight: bold;"> - </td>
+
+                                <td>
+                                    <div class="user-input-wrp">
+                                        <br/>
+                                        <input type="text" id="code_agence" name="code_agence" class="inputText" required  maxlength="5"/>
+                                        <span class="floating-label">Code agence</span>
+                                    </div>
+                                </td>
+
+                                <td valign="middle" style="font-weight: bold;"> - </td>
+
+                                <td>
+                                    <div class="user-input-wrp">
+                                        <br/>
+                                        <input type="text" class="inputText" id="num_compte" name="num_compte" required  maxlength="12"/>
+                                        <span class="floating-label">Num compte</span>
+                                    </div>
+                                </td>
+
+                                <td valign="middle" style="font-weight: bold;"> - </td>
+
+                                <td>
+                                    <div class="user-input-wrp">
+                                        <br/>
+                                        <input type="text" class="inputText" id="cle_rib" name="cle_rib" required  maxlength="2"/>
+                                        <span class="floating-label">Clé RIB</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="7"><br /></td>
+                            </tr>
+                            <tr>
+                                <td><button type="submit" class="btn btn-success">Valider</button></td>
+                                <td colspan="6">&nbsp;</td>
+                            </tr>
+                        </table>
+
+
+                    </form>
+                </div>
+            {% else %}
+                <div id="content" style="width: 50%; text-align: center;" align="center">
+                    <div class="container" style="text-align: center; padding-right: 300px; padding-top: 50px;">
+                        <a href="{{ path('clients_demander', {article: _article, confirm: true}) }}">
+                            <button class="btn btn-warning">Confirmer la demande : {{ demande.typeLbl }}</button>
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+        </div>
+    </div>
+{% endblock %}

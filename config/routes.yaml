@@ -79,6 +79,15 @@ clients_virement_beneficiaire_new:
   host:       "clients.banquedauphine.online"
   controller: App\Controller\EspaceClientController::new_beneficiaire
 
+clients_demander:
+  path:       /demander/{article}/{confirm}
+  host:       "clients.banquedauphine.online"
+  controller: App\Controller\EspaceClientController::commander
+  requirements:
+    article: 'autorisation-decouvert|compte-epargne|compte-joint|chequier|cb|beneficiaire-virement'
+  defaults:
+    confirm: null
+
 clients_commander_chequier:
   path:       /commander/chequier/{confirm}
   host:       "clients.banquedauphine.online"

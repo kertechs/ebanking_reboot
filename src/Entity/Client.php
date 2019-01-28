@@ -106,6 +106,10 @@ class Client
      */
     private $demandes;
 
+    private $has_compte_epargne;
+    private $has_compte_joint;
+    private $has_decouvert_autorise;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -119,6 +123,74 @@ class Client
         $this->comptes = new ArrayCollection();
         $this->demandes = new ArrayCollection();
         //$this->setCreatedBy();
+
+        $this->setHasCompteJoint(false);
+        $this->setHasCompteEpargne(false);
+        $this->setHasDecouvertAutorise(false);
+
+        if ($this->id)
+        {
+            $comptes = $this->getComptes();
+            foreach ($comptes as $compte)
+            {
+                $type_compte = $compte->getType();
+                $nb_types_found = 0;
+                switch($type_compte)
+                {
+                    case Comptes::COMPTE_JOINT:
+                        $nb_types_found++;
+                        $this->setHasCompteJoint(true);
+                        break;
+
+                    case Comptes::COMPTE_EPARGNE:
+                        $nb_types_found++;
+                        $this->setHasCompteEpargne(true);
+                        break;
+
+                    case Comptes::COMPTE_COURANT:
+                        if ($compte->getDecouvertAutorise() == true)
+                        {
+                            $this->setHasDecouvertAutorise(true);
+                        }
+                        break;
+                }
+
+                if ($nb_types_found >= 2)
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    public function getHasCompteEpargne(): ?bool
+    {
+        return $this->has_compte_epargne;
+    }
+    private function setHasCompteEpargne(?bool $has_compte_epargne): self
+    {
+        $this->has_compte_epargne = $has_compte_epargne;
+        return $this;
+    }
+
+    public function getHasCompteJoint(): ?bool
+    {
+        return $this->has_compte_joint;
+    }
+    private function setHasCompteJoint(?bool $has_compte_joint): self
+    {
+        $this->has_compte_joint = $has_compte_joint;
+        return $this;
+    }
+
+    public function getHasDecouvertAutorise(): ?bool
+    {
+        return $this->has_decouvert_autorise;
+    }
+    private function setHasDecouvertAutorise(?bool $has_decouvert_autorise): self
+    {
+        $this->has_decouvert_autorise= $has_decouvert_autorise;
+        return $this;
     }
 
     public function getPrenom(): ?string
