@@ -28,8 +28,25 @@ class DemandesRepository extends ServiceEntityRepository
             ->andWhere('d.client = :client_id')
             ->andWhere('d.type = :type')
             ->andWhere('d.deletedAt IS NULL')
+            ->andWhere('d.status='.Demandes::STATUS_NEW)
             ->setParameter('client_id', $client_id)
             ->setParameter('type', $type)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * @return Demandes[] Returns an array of Demandes objects
+     */
+    public function findByTypeDemande($demande_type)
+    {
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.type = :type')
+            ->andWhere('d.deletedAt IS NULL')
+            ->andWhere('d.status='.Demandes::STATUS_NEW)
+            ->setParameter('type', $demande_type)
+            ->orderBy('d.createdAt')
             ->getQuery()
             ->getResult()
             ;

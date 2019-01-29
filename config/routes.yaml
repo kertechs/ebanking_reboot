@@ -15,6 +15,14 @@ bankers_validate_registration:
     client_id: '\d+'
     decision: 'OK|KO'
 
+bankers_validate_demande:
+  path:       /validateRegistration/{demande_id}/{decision}
+  host:       "backoffice.banquedauphine.services"
+  controller: App\Controller\BackOfficeController::validateDemande
+  requirements:
+    demande_id: '\d+'
+    decision: 'OK|KO'
+
 bankers_comptes_clients:
   path:       /comptes_clients
   host:       "backoffice.banquedauphine.services"

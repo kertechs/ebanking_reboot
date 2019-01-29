@@ -118,8 +118,17 @@ class Demandes
     {
         return $this->type;
     }
-    public function getTypeLbl(): ?string
+    public function getTypeLbl($type=""): ?string
     {
+        if ($type && isset(self::DEMANDES_LABELS[$type]))
+        {
+            return self::DEMANDES_LABELS[$type];
+        }
+        elseif ($type)
+        {
+            return "";
+        }
+
         return (isset(self::DEMANDES_LABELS[$this->getType()]))?self::DEMANDES_LABELS[$this->getType()]:'';
     }
 

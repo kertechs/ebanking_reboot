@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Demandes;
 use App\Entity\Operations;
 use App\Entity\User;
 use Doctrine\ORM\EntityManager;
@@ -27,8 +28,8 @@ class BackOfficeController extends AbstractController
         /*
          * On récupère la liste des inscrits en attente de traitements (par batch de 100 max)
         */
-        $repository = $this->getDoctrine()->getRepository(Client::class);
-        $_clients = $repository->findAllProspects();
+        $clients_repository = $this->getDoctrine()->getRepository(Client::class);
+        $_clients = $clients_repository->findAllProspects();
 
         $clients = $clients_json = [];
         foreach($_clients as $client){
@@ -58,12 +59,27 @@ class BackOfficeController extends AbstractController
         dump($clients);
         dd($_clients);*/
 
+        /*
+         * On récupère la liste des demandes en attente de traitement
+        */
+        $demandes_repository = $this->getDoctrine()->getRepository(Demandes::class);
+        $demandes = [];
+        foreach (array_keys(Demandes::DEMANDES_LABELS) as $const_demande_type)
+        {
+            $_class = new \ReflectionClass('App\Entity\Demandes');
+            $demande_type = $_class->getConstant($const_demande_type);
+            dump($demande_type);
+            $demandes[$demande_type] = $demandes_repository->findByTypeDemande($demande_type);
+        }
+        dump($demandes);
+
         return $this->render('backoffice/index.html.twig', [
             'controller_name' => 'BackOfficeController',
             'context_entry' => 'Validations',
             'clients_collection' => $_clients,
             'clients' => $clients,
             'clients_json' => $clients_json,
+            'demandes' => $demandes,
         ]);
     }
 

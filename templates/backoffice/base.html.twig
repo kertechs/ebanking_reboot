@@ -12,18 +12,15 @@
 
 
     {% block stylesheets %}
-    <!-- Bootstrap core CSS     -->
-    <link href="assetsBack/css/bootstrap.min.css" rel="stylesheet" />
-
     <!-- Animation library for notifications   -->
-    <link href="assetsBack/css/animate.min.css" rel="stylesheet"/>
+    {#<link href="assetsBack/css/animate.min.css" rel="stylesheet"/>#}
 
     <!--  Light Bootstrap Table core CSS    -->
     <link href="assetsBack/css/light-bootstrap-dashboard.css?v=1.4.0" rel="stylesheet"/>
 
 
     <!--  CSS for Demo Purpose, don't include it in your project     -->
-    <link href="assetsBack/css/demo.css" rel="stylesheet" />
+    {#<link href="assetsBack/css/demo.css" rel="stylesheet" />#}
 
 
     <!--     Fonts and icons     -->
@@ -33,17 +30,41 @@
 
     {% endblock %}
 
-    {% block dhtmlx %}
+    {#{% block dhtmlx %}
         <!-- DhtmlX -->
         <link rel="stylesheet" type="text/css" href="/assetsBack/js/dhtmlx/codebase/fonts/font_roboto/roboto.css"/>
         <link rel="stylesheet" type="text/css" href="/assetsBack/js/dhtmlx/codebase/dhtmlx.css"/>
         <script src="/assetsBack/js/dhtmlx/codebase/dhtmlx.js"></script>
-    {% endblock %}
+    {% endblock %}#}
 
-    {% block jquery %}
+    {% block jquery_bootstrap_datables %}
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+        <!-- Datatables -->
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
-        <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
         <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+        {#<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>#}
+        {#<script src="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css"></script>#}
+        <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
+
+        <!-- Datatables Buttons -->
+        <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.4/css/buttons.bootstrap4.min.css">
+        <script src="https://cdn.datatables.net/buttons/1.5.4/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.5.4/js/buttons.bootstrap4.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+
     {% endblock %}
 
 </head>
