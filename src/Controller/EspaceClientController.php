@@ -142,6 +142,7 @@ class EspaceClientController extends AbstractController
                     'code_bank' => $code_bank,
                     'code_agence' => $code_agence,
                     'num_compte' => $num_compte,
+                    'cle_rib' => $cle_rib,
                     'iban' => $iban,
                 ];
                 $demande->setDetails($datas);

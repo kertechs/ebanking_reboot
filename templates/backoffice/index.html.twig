@@ -35,14 +35,14 @@
                     <div class="header">
                         <h4 class="title">Ouvertures de compte</h4>
                         <p class="category">Demandes en attente de validation</p>
-                        <table id="liste_prospects" class="table table-striped " style="width: 100%;">
+                        <table id="liste_prospects" class="table auto_datatable table-striped " style="width: 100%;">
                             <thead>
                             <tr>
                                 <th>Prénom</th>
                                 <th>Nom</th>
                                 <th>Email</th>
                                 <th>Mobile</th>
-                                <th style="border-top: none !important; border-right: none !important;"></th>
+                                <th></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -52,7 +52,7 @@
                                     <td>{{ client.nom }}</td>
                                     <td>{{ client.email }}</td>
                                     <td>{{ client.mobile }}</td>
-                                    <td>
+                                    <td class="details_control">
                                         <a href="/validateRegistration/{{ client.id }}/KO"><button type="button" class="btn btn-danger">Refuser</button></a>
                                         <a href="/validateRegistration/{{ client.id }}/OK"><button type="button" class="btn btn-success">Valider</button></a>
                                     </td>
@@ -111,9 +111,13 @@
                         <div class="tab-content">
                             {% for demande_type,_demandes in demandes %}
                             <div id="{{ demande_type }}" class="tab-pane fade {% if (iterator == 0) %}in active{% endif %}">
-                                <table id="liste_demandes_{{ demande_type }}" class="table table-striped {#table-bordered#}" cellspacing="0" style="width: 100%;">
+                                <table id="liste_demandes_{{ demande_type }}" class="table {% if (demande_type) != "DEMANDE_DESTINATAIRE_VIREMENT" %}auto_datatable{% endif %} table-striped {#table-bordered#}" cellspacing="0" style="width: 100%;">
                                     <thead>
                                         <tr>
+                                            {% if (demande_type == "DEMANDE_DESTINATAIRE_VIREMENT") %}
+                                                <th></th>
+                                                <th>Détail</th>
+                                            {% endif %}
                                             <th>Date de la demande</th>
                                             <th>Auteur de la demande</th>
                                             <th>Client</th>
@@ -124,6 +128,13 @@
                                     <tbody>
                                     {% for   _demande in _demandes %}
                                         <tr>
+                                            {% if (demande_type == "DEMANDE_DESTINATAIRE_VIREMENT") %}
+                                                <td></td>
+                                                <td>
+                                                    {{ _demande.details|json_encode() }}
+                                                </td>
+                                            {% endif %}
+
                                             <td>{{ _demande.createdAt | date("d/m/Y") }}</td>
                                             <td>{{ _demande.createdBy }}</td>
                                             <td>{{ _demande.client.prenom }} {{ _demande.client.nom }}</td>
@@ -182,71 +193,128 @@
     </div>
 </div>
 
+<style>
+    td.details-control {
+        background: url('https://datatables.net/examples/resources/details_open.png') no-repeat center center;
+        cursor: pointer;
+    }
+
+    tr.shown td.details-control {
+        background: url('https://datatables.net/examples/resources/details_close.png') no-repeat center center;
+    }
+</style>
+
     <script>
-        $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
-            $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
-        });
+    $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+        $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+    });
 
-        $('table.table').DataTable( {
-            /*ajax:           '../ajax/data/arrays.txt',
-            scrollY:        200,
-            paging:         false*/
+    $('table.auto_datatable').DataTable( {
+        scrollCollapse: true
+        ,"language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        }
+        /*,"dom": '<"top"if>rt<"bottom"lp><"clear">'*/
+        ,dom: 'Bfrtip'
+        ,select:"single"
+        ,responsive: true
+        ,buttons: [
+            'copyHtml5',
+            'excelHtml5',
+            'csvHtml5',
+            'pdfHtml5'
+        ]
+    } );
 
-            scrollCollapse: true
-            ,"language": {
-                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
-            }
-            /*,"dom": '<"top"if>rt<"bottom"lp><"clear">'*/
-            ,dom: 'Bfrtip'
-            ,responsive: true
-            ,buttons: [
-                'copyHtml5',
-                'excelHtml5',
-                'csvHtml5',
-                'pdfHtml5'
-            ]
+    /* Formatting function for row details - modify as you need */
+    function demande_beneficiaire_format ( d ) {
+        // `d` is the original data object for the row
+        var json_details_demande = JSON.parse(d.json_details_demande);
+        var iban,beneficiaire;
+
+        (json_details_demande.hasOwnProperty('iban'))?iban=json_details_demande.iban:iban=null;
+        (json_details_demande.hasOwnProperty('beneficiaire'))?beneficiaire=json_details_demande.beneficiaire:beneficiaire=null;
+
+        return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+            '<tr>'+
+            '<td>Bénéficiaire:</td>'+
+            '<td>'+beneficiaire+'</td>'+
+            '</tr>'+
+            '<tr>'+
+            '<td>IBAN:</td>'+
+            '<td>'+iban+'</td>'+
+            '</tr>'
+            '</table>';
+    }
+
+    var demande_beneficiaire_table = $('#liste_demandes_DEMANDE_DESTINATAIRE_VIREMENT').DataTable( {
+        scrollCollapse: true,
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+        },
+        /*"dom": '<"top"if>rt<"bottom"lp><"clear">',*/
+        dom: 'Bfrtip',
+        select:"single",
+        responsive: true,
+        /*,buttons: [
+            'copyHtml5',
+            'excelHtml5',
+            'csvHtml5',
+            'pdfHtml5'
+        ],*/
+        buttons: [],
+        "columns": [
+            {
+                "data": "empty_col",
+                "className": "details-control",
+                "orderable":      false,
+            },
+            { "data": "json_details_demande" },
+            { "data": "date_demande" },
+            { "data": "auteur_demande" },
+            { "data": "client" },
+            { "data": "client_comptes" },
+            {
+                "data": "backoffice_actions_col",
+                "orderable":      false,
+            },
+        ],
+        "columnDefs": [
+            {
+                "targets": [ 1 ],
+                "visible": false,
+                "searchable": false
+            }/*,
+            {
+                "targets": [ 3 ],
+                "visible": false
+            }*/
+        ],
+        "order": [[1, 'asc']]
+    } );
+
+    $('#liste_demandes_DEMANDE_DESTINATAIRE_VIREMENT tbody').on('click','td', function (){
+        var tr = $(this).closest('tr');
+        var row = demande_beneficiaire_table.row( tr );
+        console.log(row.data());
+
+        if ( row.child.isShown() ) {
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+        else {
+            row.child( demande_beneficiaire_format(row.data()) ).show();
+            tr.addClass('shown');
+        }
+    });
+
+    // On each draw, loop over the `detailRows` array and show any child rows
+    /*dt.on( 'draw', function () {
+        $.each( detailRows, function ( i, id ) {
+            $('#'+id+' td.details-control').trigger( 'click' );
         } );
+    } );*/
 
-        /*var detailRows = [];
-                        $('#liste_prospects tbody').on( 'click', 'tr td.details-control', function () {
-                            var tr = $(this).closest('tr');
-                            var row = dt.row( tr );
-                            var idx = $.inArray( tr.attr('id'), detailRows );
-
-                            if ( row.child.isShown() ) {
-                                tr.removeClass( 'details' );
-                                row.child.hide();
-
-                                // Remove from the 'open' array
-                                detailRows.splice( idx, 1 );
-                            }
-                            else {
-                                tr.addClass( 'details' );
-                                row.child( format( row.data() ) ).show();
-
-                                // Add to the 'open' array
-                                if ( idx === -1 ) {
-                                    detailRows.push( tr.attr('id') );
-                                }
-                            }
-                        } );*/
-
-        // On each draw, loop over the `detailRows` array and show any child rows
-        /*dt.on( 'draw', function () {
-            $.each( detailRows, function ( i, id ) {
-                $('#'+id+' td.details-control').trigger( 'click' );
-            } );
-        } );*/
-
-        /*        $('#example').DataTable( {
-                    data: data,
-                    columns: [
-                        { data: 'name' },
-                        { data: 'position' },
-                        { data: 'salary' },
-                        { data: 'office' }
-                    ]
-                } );*/
-    </script>
+</script>
 
 {% endblock %}
