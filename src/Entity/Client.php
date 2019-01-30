@@ -110,6 +110,11 @@ class Client
     private $has_compte_joint;
     private $has_decouvert_autorise;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Beneficiaires", mappedBy="Client")
+     */
+    private $beneficiaires;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -161,6 +166,7 @@ class Client
                 }
             }
         }
+        $this->beneficiaires = new ArrayCollection();
     }
 
     public function getHasCompteEpargne(): ?bool
@@ -391,6 +397,37 @@ class Client
             // set the owning side to null (unless already changed)
             if ($demande->getClient() === $this) {
                 $demande->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Beneficiaires[]
+     */
+    public function getBeneficiaires(): Collection
+    {
+        return $this->beneficiaires;
+    }
+
+    public function addBeneficiaire(Beneficiaires $beneficiaire): self
+    {
+        if (!$this->beneficiaires->contains($beneficiaire)) {
+            $this->beneficiaires[] = $beneficiaire;
+            $beneficiaire->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBeneficiaire(Beneficiaires $beneficiaire): self
+    {
+        if ($this->beneficiaires->contains($beneficiaire)) {
+            $this->beneficiaires->removeElement($beneficiaire);
+            // set the owning side to null (unless already changed)
+            if ($beneficiaire->getClient() === $this) {
+                $beneficiaire->setClient(null);
             }
         }
 
