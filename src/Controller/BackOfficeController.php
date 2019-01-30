@@ -147,6 +147,74 @@ class BackOfficeController extends AbstractController
         ]);
     }
 
+    public function validateDemande($demande_id, $decision
+        , EntityManagerInterface $em
+        , \Swift_Mailer $mailer
+        , Request $request
+    )
+    {
+        $demande = $this->getDoctrine()
+            ->getRepository(Demandes::class)
+            ->find($demande_id);
+
+        if ($demande->getId() == $$demande_id && $decision == "KO")
+        {
+            //edit status deleted
+            $demande->setStatus(300);
+            $demande->setDeletedAt(new \DateTime());
+            $em->persist($demande);
+            $em->flush();
+
+            //Envoyer message email
+            $client = $demande->getClient();
+            $message = (new \Swift_Message('Suite à votre demande d\'inscription sur banquedauphine.online'))
+                ->setFrom('contact@banquedauphine.online')
+                ->setTo($demande->getClient()->getEmail())
+                ->setBody(
+                    $this->renderView(
+                        'emails/notificationRefusDemande.html.twig',[
+                            'client' => $client,
+                            'demande' => $demande,
+                        ]
+                    ),
+                    'text/html'
+                );
+            $mailer->send($message);
+
+            //Add flash message
+            $this->addFlash('success', 'Notification de refus envoyée à '
+                . $client->getCivilite().' '
+                . $client->getPrenom().' '
+                . $client->getNom().' '
+            );
+        }
+        elseif ($demande->getId() == $demande_id && $decision == "OK")
+        {
+            $demande_ok = false;
+            $client = $demande->getClient();
+            switch ($demande->getType())
+            {
+                case Demandes::DEMANDE_COMPTE_EPARGNE:
+                case Demandes::DEMANDE_COMPTE_JOINT:
+                    $new_compte = new Comptes();
+                    $new_compte->setType(str_replace($demande->getType(),'DEMANDE_',''));
+                    $client->addCompte($new_compte);
+                    $demande->setStatus(Demandes::STATUS_GRANTED);
+                    $em->persist($new_compte);
+                    $em->persist($client);
+                    $em->persist($demande);
+                    $demande_ok = true;
+
+                    break;
+
+/*                case 'DEMANDE_DESTINATAIRE_VIREMENT':
+                    $beneficiaire = new Beneficiaires();
+                    break;*/
+            }
+        }
+
+        return $this->redirectToRoute('bankers');
+    }
     public function validateRegistration($client_id, $decision
         , EntityManagerInterface $em
         , \Swift_Mailer $mailer
