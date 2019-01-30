@@ -19,7 +19,7 @@ class ClientRepository extends ServiceEntityRepository
         parent::__construct($registry, Client::class);
     }
 
-    /*
+    /**
      * @return Client[]
      */
     public function findAllProspects()

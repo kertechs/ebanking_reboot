@@ -194,6 +194,21 @@
 </div>
 
 <style>
+    .strikeout {
+        font-size: 1em;
+        position: relative;
+    }
+    .strikeout::after {
+        border-bottom: 0.125em solid rgba(255, 0, 0, 0.5);
+        content: "";
+        left: 0;
+        line-height: 1em;
+        margin-top: calc(0.125em / 2 * -1);
+        position: absolute;
+        right: 0;
+        top: 50%;
+    }
+
     td.details-control {
         background: url('https://datatables.net/examples/resources/details_open.png') no-repeat center center;
         cursor: pointer;
@@ -210,41 +225,82 @@
     });
 
     $('table.auto_datatable').DataTable( {
-        scrollCollapse: true
-        ,"language": {
+        scrollCollapse: true,
+        "language": {
             "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
-        }
-        /*,"dom": '<"top"if>rt<"bottom"lp><"clear">'*/
-        ,dom: 'Bfrtip'
-        ,select:"single"
-        ,responsive: true
-        ,buttons: [
+        },
+        /*"dom": '<"top"if>rt<"bottom"lp><"clear">',*/
+        dom: 'Bfrtip',
+        select:"single",
+        responsive: true,
+        buttons: [
             'copyHtml5',
             'excelHtml5',
-            'csvHtml5',
-            'pdfHtml5'
+            'pdfHtml5',
+            'print',
         ]
+        ,"columns": [
+            { "data": "date_demande" },
+            { "data": "auteur_demande" },
+            { "data": "client" },
+            { "data": "client_comptes" },
+            {
+                "data": "backoffice_actions_col",
+                "orderable":      false,
+            },
+        ],
     } );
 
     /* Formatting function for row details - modify as you need */
     function demande_beneficiaire_format ( d ) {
         // `d` is the original data object for the row
+        if (d == undefined || d.json_details_demande == undefined || d.json_details_demande == null || !d.json_details_demande || d.json_details_demande == "null"){
+            return '<div class="alert alert-danger" role="alert">Aucune information fournie/trouvée</div>';
+        }
+
         var json_details_demande = JSON.parse(d.json_details_demande);
-        var iban,beneficiaire;
+        var _return, iban, beneficiaire, alert_class, iban_class;
 
         (json_details_demande.hasOwnProperty('iban'))?iban=json_details_demande.iban:iban=null;
         (json_details_demande.hasOwnProperty('beneficiaire'))?beneficiaire=json_details_demande.beneficiaire:beneficiaire=null;
+        (json_details_demande.hasOwnProperty('iban_is_ok'))?iban_is_ok=json_details_demande.iban_is_ok:iban_is_ok=false;
+        (json_details_demande.hasOwnProperty('matching_compte_found'))?matching_compte_found=json_details_demande.matching_compte_found:matching_compte_found=null;
 
-        return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
-            '<tr>'+
-            '<td>Bénéficiaire:</td>'+
-            '<td>'+beneficiaire+'</td>'+
-            '</tr>'+
-            '<tr>'+
-            '<td>IBAN:</td>'+
-            '<td>'+iban+'</td>'+
-            '</tr>'
-            '</table>';
+        //iban_is_ok = false; //debug purposes only
+        (iban_is_ok)?alert_class = 'info':alert_class='warning';
+        (iban_is_ok)?iban_class = '':iban_class='strikeout';
+
+        _return = '' +
+            '<div class="alert alert-' + alert_class + '" role="alert" style="width: 100%;">' +
+            '<div class="row">' +
+            '<div class="col-md-2"><b>Bénéficiaire : </b></div>' +
+            '<div class="col-md-2">' + beneficiaire + '</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<div class="col-md-2"><b>IBAN : </b></div>' +
+            '<div class="col-md-2"><span class="'+iban_class+'">';
+        if (iban_is_ok){
+            _return += '<i class="fa fa-check" style="color: forestgreen;" aria-hidden="true">&nbsp;<b><span style="color: black;">'+iban+'</span></b></i></span>'
+        }
+        else {
+            _return += iban + '</span>&nbsp;<span style="color: black; font-style: italic; font-weight: bold;">(compte&nbsp;non&nbsp;trouvé)</span>';
+        }
+        _return += '</div>' +
+            '</div>';
+
+        if (iban_is_ok){
+            _return += '<div class="row">' +
+                '<div class="col-md-2"><b>Infos compte destinataire : </b></div>' +
+                '<div class="col-md-2"><span style="color: black;">Agence : </span>' + json_details_demande.matching_compte_found.agence + '<br />' +
+                '<span style="color: black;">Compte créé le : </span>' + json_details_demande.matching_compte_found.createdAt + '<br />' +
+                '</div>' +
+                '</div>';
+        }
+
+        _return += '</div>' +
+        '';
+
+        return _return;
     }
 
     var demande_beneficiaire_table = $('#liste_demandes_DEMANDE_DESTINATAIRE_VIREMENT').DataTable( {

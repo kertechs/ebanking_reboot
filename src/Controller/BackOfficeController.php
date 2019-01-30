@@ -29,35 +29,31 @@ class BackOfficeController extends AbstractController
          * On récupère la liste des inscrits en attente de traitements (par batch de 100 max)
         */
         $clients_repository = $this->getDoctrine()->getRepository(Client::class);
-        $_clients = $clients_repository->findAllProspects();
+        $_prospects = $clients_repository->findAllProspects();
 
-        $clients = $clients_json = [];
-        foreach($_clients as $client){
-            $clients[] = array(
-                'id' => $client->getId(),
-                'civilite' => $client->getCivilite(),
-                'prenom' => $client->getPrenom(),
-                'nom' => $client->getNom(),
-                'email' => $client->getEmail(),
-                'mobile' => $client->getMobile(),
-                'adresse' => $client->getAdresse(),
-                'code_postal' => $client->getCodePostal(),
-                'ville' => $client->getVille(),
-                'Pays' => $client->getPays(),
-                'createdAt' => $client->getCreatedAt()->format('Y-m-d H:i:s'),
-                'updatedAt' => $client->getUpdatedAt()->format('Y-m-d H:i:s'),
-                'createdBy' => $client->getCreatedBy(),
-                'updatedBy' => $client->getUpdatedBy(),
-                'createdFromIp' => $client->getCreatedFromIp(),
-                'updatedFromIp' => $client->getUpdatedFromIp(),
-                'status' => $client->getStatus(),
+        $prospects = $prospects_json = [];
+        foreach($_prospects as $prospect){
+            $prospects[] = array(
+                'id' => $prospect->getId(),
+                'civilite' => $prospect->getCivilite(),
+                'prenom' => $prospect->getPrenom(),
+                'nom' => $prospect->getNom(),
+                'email' => $prospect->getEmail(),
+                'mobile' => $prospect->getMobile(),
+                'adresse' => $prospect->getAdresse(),
+                'code_postal' => $prospect->getCodePostal(),
+                'ville' => $prospect->getVille(),
+                'Pays' => $prospect->getPays(),
+                'createdAt' => $prospect->getCreatedAt()->format('Y-m-d H:i:s'),
+                'updatedAt' => $prospect->getUpdatedAt()->format('Y-m-d H:i:s'),
+                'createdBy' => $prospect->getCreatedBy(),
+                'updatedBy' => $prospect->getUpdatedBy(),
+                'createdFromIp' => $prospect->getCreatedFromIp(),
+                'updatedFromIp' => $prospect->getUpdatedFromIp(),
+                'status' => $prospect->getStatus(),
             );
         }
-        $clients_json = json_encode($clients);
-
-        /*dump($clients_json);
-        dump($clients);
-        dd($_clients);*/
+        $prospects_json = json_encode($prospects);
 
         /*
          * On récupère la liste des demandes en attente de traitement
@@ -73,12 +69,48 @@ class BackOfficeController extends AbstractController
         }
         dump($demandes);
 
+        /*
+         * Cas particulier des demandes d'ajout de bénéficiaire
+         * On va chercher à indiquer au gestionnaire si l'iban demandé existe ou pas
+         */
+        //dd($demandes);
+        foreach ($demandes[Demandes::DEMANDE_DESTINATAIRE_VIREMENT] as $_idx =>  $_demande)
+        {
+            $_demande_details = $_demande->getDetails();
+            $_demande_details['matching_compte_found'] = null;
+            $_iban_ok = false;
+            if (is_array($_demande_details) && isset($_demande_details['iban']) && $iban = $_demande_details['iban'])
+            {
+                $comptes_repository = $this->getDoctrine()->getRepository(Comptes::class);
+                $_comptes = $comptes_repository->findByIban($iban);
+                if (is_array($_comptes) && count($_comptes) == 1)
+                {
+                    $_iban_ok = true;
+                    $_matching_compte = $_comptes[0];
+
+                    $_demande_details['matching_compte_found'] = [
+                        'type' => $_matching_compte->getType(),
+                        'agence' => $_matching_compte->getAgenceId()->getNom(),
+                        //'prenom' => $_matching_compte->getClient()->getPrenom(),
+                        //'nom' => $_matching_compte->getClient()->getNom(),
+                        'createdAt' => $_matching_compte->getCreatedAt()->format('d/m/Y'),
+                        'iban' => $_matching_compte->getIban(),
+                    ];
+                }
+            }
+            $_demande_details['iban_is_ok'] = $_iban_ok;
+            $_demande->setDetails($_demande_details);
+            $demandes[Demandes::DEMANDE_DESTINATAIRE_VIREMENT][$_idx] = $_demande;
+        }
+        dump($demandes);
+
+
         return $this->render('backoffice/index.html.twig', [
             'controller_name' => 'BackOfficeController',
             'context_entry' => 'Validations',
-            'clients_collection' => $_clients,
-            'clients' => $clients,
-            'clients_json' => $clients_json,
+            'clients_collection' => $_prospects,
+            'clients' => $prospects,
+            'clients_json' => $prospects_json,
             'demandes' => $demandes,
         ]);
     }
