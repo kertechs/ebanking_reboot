@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Beneficiaires;
 use App\Entity\Demandes;
 use App\Entity\Operations;
 use App\Entity\User;
@@ -157,7 +158,7 @@ class BackOfficeController extends AbstractController
             ->getRepository(Demandes::class)
             ->find($demande_id);
 
-        if ($demande->getId() == $$demande_id && $decision == "KO")
+        if ($demande->getId() == $demande_id && $decision == "KO")
         {
             //edit status deleted
             $demande->setStatus(300);
@@ -188,33 +189,94 @@ class BackOfficeController extends AbstractController
                 . $client->getNom().' '
             );
         }
-        elseif ($demande->getId() == $demande_id && $decision == "OK")
+        elseif ($demande->getId() == $demande_id && $decision == "OK" && $demande->getStatus() == Demandes::STATUS_NEW)
         {
             $demande_ok = false;
             $client = $demande->getClient();
             switch ($demande->getType())
             {
                 case Demandes::DEMANDE_COMPTE_EPARGNE:
+                    $new_compte = new Comptes();
+                    $new_compte->setType(Comptes::COMPTE_EPARGNE);
+                    $em->persist($new_compte);
+
+                    $client->addCompte($new_compte);
+                    $em->persist($client);
+
+                    $demande->setStatus(Demandes::STATUS_GRANTED);
+                    $em->persist($demande);
+
+                    $em->flush();
+                    dump($client);
+                    dump($new_compte);
+                    dump($demande);
+                    $demande_ok = true;
+                    dd($demande_ok);
+                    break;
                 case Demandes::DEMANDE_COMPTE_JOINT:
                     $new_compte = new Comptes();
-                    $new_compte->setType(str_replace($demande->getType(),'DEMANDE_',''));
-                    $client->addCompte($new_compte);
-                    $demande->setStatus(Demandes::STATUS_GRANTED);
-                    $em->persist($new_compte);
-                    $em->persist($client);
-                    $em->persist($demande);
-                    $demande_ok = true;
+                    $new_compte->setType(Comptes::COMPTE_JOINT);
+                    //$em->persist($new_compte);
 
+                    $client->addCompte($new_compte);
+                    //$em->persist($client);
+
+                    $demande->setStatus(Demandes::STATUS_GRANTED);
+                    //$em->persist($demande);
+
+                    //$em->flush();
+
+                    dump($client);
+                    dump($new_compte);
+                    dump($demande);
+                    $demande_ok = true;
+                    dd($demande_ok);
                     break;
 
-/*                case 'DEMANDE_DESTINATAIRE_VIREMENT':
-                    $beneficiaire = new Beneficiaires();
-                    break;*/
+                case Demandes::DEMANDE_DESTINATAIRE_VIREMENT:
+                    $demande_details = $demande->getDetails();
+                    $demande_details['matching_compte_found'] = null;
+                    $iban_ok = false;
+                    if (is_array($demande_details) && isset($demande_details['iban']) && $iban = $demande_details['iban'])
+                    {
+                        $comptes_repository = $this->getDoctrine()->getRepository(Comptes::class);
+                        $comptes = $comptes_repository->findByIban($iban);
+                        $compte = $comptes[0];
+                        //dd($comptes);
+                        if (is_array($comptes) && count($comptes) == 1 &&  $compte->getIban() == $iban)
+                        {
+                            $iban_ok = true;
+                            $matching_compte = $comptes[0];
+
+                            /*$demande_details['matching_compte_found'] = [
+                                'type' => $matching_compte->getType(),
+                                'agence' => $matching_compte->getAgenceId()->getNom(),
+                                'createdAt' => $matching_compte->getCreatedAt()->format('d/m/Y'),
+                                'iban' => $_matching_compte->getIban(),
+                            ];*/
+
+                            $beneficiaire = new Beneficiaires();
+                            $beneficiaire->setClient($client);
+                            $beneficiaire->setCompte($compte);
+                            $em->persist($beneficiaire);
+
+                            $demande->setStatus(Demandes::STATUS_GRANTED);
+                            $em->persist($demande);
+
+                            $em->flush();
+                            dd($matching_compte);
+                        }
+                    }
+
+
+
+                    break;
             }
         }
 
         return $this->redirectToRoute('bankers');
     }
+
     public function validateRegistration($client_id, $decision
         , EntityManagerInterface $em
         , \Swift_Mailer $mailer
