@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Console\Tests\Command\CommandTest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Client;
@@ -65,7 +66,6 @@ class BackOfficeController extends AbstractController
         {
             $_class = new \ReflectionClass('App\Entity\Demandes');
             $demande_type = $_class->getConstant($const_demande_type);
-            dump($demande_type);
             $demandes[$demande_type] = $demandes_repository->findByTypeDemande($demande_type);
         }
         dump($demandes);
@@ -103,7 +103,7 @@ class BackOfficeController extends AbstractController
             $_demande->setDetails($_demande_details);
             $demandes[Demandes::DEMANDE_DESTINATAIRE_VIREMENT][$_idx] = $_demande;
         }
-        dump($demandes);
+        //dump($demandes);
 
 
         return $this->render('backoffice/index.html.twig', [
@@ -148,20 +148,24 @@ class BackOfficeController extends AbstractController
         ]);
     }
 
-    public function validateDemande($demande_id, $decision
+    public function validateDemande($demande_id, $decision, $additional_param
         , EntityManagerInterface $em
         , \Swift_Mailer $mailer
         , Request $request
     )
     {
+        //dd($additional_param);
         $demande = $this->getDoctrine()
             ->getRepository(Demandes::class)
             ->find($demande_id);
 
-        if ($demande->getId() == $demande_id && $decision == "KO")
+        //On ne traite pas une demande qui n'est plus en status ::STATUS_NEW
+
+        if ($demande->getId() == $demande_id && $decision == "KO" && $demande->getStatus() == Demandes::STATUS_NEW)
+        //Demande refusée
         {
             //edit status deleted
-            $demande->setStatus(300);
+            $demande->setStatus(Demandes::STATUS_REFUSED);
             $demande->setDeletedAt(new \DateTime());
             $em->persist($demande);
             $em->flush();
@@ -207,30 +211,25 @@ class BackOfficeController extends AbstractController
                     $em->persist($demande);
 
                     $em->flush();
-                    dump($client);
-                    dump($new_compte);
-                    dump($demande);
                     $demande_ok = true;
-                    dd($demande_ok);
+                    $this->addFlash('success', 'Compte épargne ajouté');
                     break;
+
                 case Demandes::DEMANDE_COMPTE_JOINT:
                     $new_compte = new Comptes();
                     $new_compte->setType(Comptes::COMPTE_JOINT);
-                    //$em->persist($new_compte);
+                    $em->persist($new_compte);
 
                     $client->addCompte($new_compte);
-                    //$em->persist($client);
+                    $em->persist($client);
 
                     $demande->setStatus(Demandes::STATUS_GRANTED);
-                    //$em->persist($demande);
+                    $em->persist($demande);
 
-                    //$em->flush();
+                    $em->flush();
 
-                    dump($client);
-                    dump($new_compte);
-                    dump($demande);
                     $demande_ok = true;
-                    dd($demande_ok);
+                    $this->addFlash('success', 'Compte joint ajouté');
                     break;
 
                 case Demandes::DEMANDE_DESTINATAIRE_VIREMENT:
@@ -243,7 +242,7 @@ class BackOfficeController extends AbstractController
                         $comptes = $comptes_repository->findByIban($iban);
                         $compte = $comptes[0];
                         //dd($comptes);
-                        if (is_array($comptes) && count($comptes) == 1 &&  $compte->getIban() == $iban)
+                        if (is_array($comptes) && count($comptes) == 1 &&  $compte->getIban() == $iban && $compte != $client->getCompteCourant())
                         {
                             $iban_ok = true;
                             $matching_compte = $comptes[0];
@@ -264,12 +263,42 @@ class BackOfficeController extends AbstractController
                             $em->persist($demande);
 
                             $em->flush();
-                            dd($matching_compte);
+                            //dd($matching_compte);
+
+                            //Add flash message
+                            $this->addFlash('success', 'Compte destinataire ajouté');
+                        }
+                        else
+                        {
+                            //Add flash message
+                            $this->addFlash('error', 'Echec de la validation de la demande');
                         }
                     }
+                    break;
 
+                case Demandes::DEMANDE_DECOUVERT_AUTORISE:
+                    $decouvert_autorise = true;
+                    $decouvert_montant_max = abs((int)$additional_param);
+                    $client->setHasDecouvertAutorise = true;
+                    $em->persist($client);
 
+                    $comptes = $client->getComptes();
+                    foreach ($comptes as $compte)
+                    {
+                        if ($compte->getType() == Comptes::COMPTE_COURANT)
+                        {
+                            $compte->setDecouvertAutorise($decouvert_autorise);
+                            $compte->setDecouvertMaximum($decouvert_montant_max);
+                            $em->persist($compte);
 
+                            $demande->setStatus(Demandes::STATUS_GRANTED);
+                            $em->persist($demande);
+
+                            $em->flush();
+
+                            $this->addFlash('success', 'Autorisation de découvert en place sur le compte '.$compte->getIban());
+                        }
+                    }
                     break;
             }
         }

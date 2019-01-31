@@ -16,9 +16,10 @@ bankers_validate_registration:
     decision: 'OK|KO'
 
 bankers_validate_demande:
-  path:       /validateDemande/{demande_id}/{decision}
+  path:       /validateDemande/{demande_id}/{decision}/{additional_param}
   host:       "backoffice.banquedauphine.services"
   controller: App\Controller\BackOfficeController::validateDemande
+  defaults: { additional_param: '' }
   requirements:
     demande_id: '\d+'
     decision: 'OK|KO'

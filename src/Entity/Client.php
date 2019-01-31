@@ -109,6 +109,7 @@ class Client
     private $has_compte_epargne;
     private $has_compte_joint;
     private $has_decouvert_autorise;
+    private $compte_courant;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Beneficiaires", mappedBy="Client")
@@ -319,6 +320,31 @@ class Client
         return $this;
     }
 
+    public function setCompteCourant(?Comptes $compte): self
+    {
+        $this->compte_courant = $compte;
+        return $this;
+    }
+    public function getCompteCourant(): ?Comptes
+    {
+        if ($this->compte_courant)
+        {
+            return $this->compte_courant;
+        }
+        else
+        {
+            foreach ($this->getComptes() as $compte)
+            {
+                if ($compte->getType() == Comptes::COMPTE_COURANT)
+                {
+                    $this->setCompteCourant($compte);
+                    break;
+                }
+            }
+        }
+
+        return $this->compte_courant;
+    }
 
     /**
      * @return Collection|Comptes[]

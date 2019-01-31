@@ -110,6 +110,58 @@
                         {% set iterator = 0 %}
                         <div class="tab-content">
                             {% for demande_type,_demandes in demandes %}
+                                {% if demande_type == constant('App\\Entity\\Demandes::DEMANDE_DECOUVERT_AUTORISE') %}
+                                {#{{ dump(demande_type) }}#}
+                                {#{{ dump(constant('App\\Entity\\Demandes::DEMANDE_DECOUVERT_AUTORISE')) }}#}
+
+                                <script>
+                                   /* dialog = $( "#dialog-form" ).dialog({
+                                        autoOpen: false,
+                                        height: 400,
+                                        width: 350,
+                                        modal: true,
+                                        buttons: {
+                                            "Montant du découvert autorisé": addUser,
+                                            Cancel: function() {
+                                                dialog.dialog( "close" );
+                                            }
+                                        },
+                                        close: function() {
+                                            form[ 0 ].reset();
+                                            allFields.removeClass( "ui-state-error" );
+                                        }
+                                    });*/
+
+                                   /*$("#btn_validate_demande").click(function(ev) {
+                                       alert("YOP");
+                                       return false;
+
+                                       ev.preventDefault(); // preventDefault should suffice, no return false
+                                       var href = $(this).attr("href");
+                                       var dialog = $("<div>Are you sure?</div>");
+
+                                       $(dialog).dialog({
+                                           resizable: false,
+                                           autoOpen: true,
+                                           modal: true,
+                                           buttons: {
+                                               'OK': function() {
+                                                   window.location = href;
+                                                   $( this ).dialog( "close" );
+                                               },
+                                               'Cancel': function() {
+                                                   $( this ).dialog( "close" );
+                                               }
+                                           },
+                                           close: function () {
+                                               //$( this ).remove();
+                                           }
+                                       });
+                                   });*/
+
+                                </script>
+                                {% endif %}
+
                             <div id="{{ demande_type }}" class="tab-pane fade {% if (iterator == 0) %}in active{% endif %}">
                                 <table id="liste_demandes_{{ demande_type }}" class="table {% if (demande_type) != "DEMANDE_DESTINATAIRE_VIREMENT" %}auto_datatable{% endif %} table-striped {#table-bordered#}" cellspacing="0" style="width: 100%;">
                                     <thead>
@@ -149,7 +201,7 @@
                                             </td>
                                             <td>
                                                 <a href="/validateDemande/{{ _demande.id }}/KO"><button type="button" class="btn btn-danger">Refuser</button></a>
-                                                <a href="/validateDemande/{{ _demande.id }}/OK"><button type="button" class="btn btn-success">Valider</button></a>
+                                                <a href="/validateDemande/{{ _demande.id }}/OK" id="btn_validate_demande"><button type="button" class="btn btn-success" data-demande_type="{{ demande_type }}">Valider</button></a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -194,6 +246,29 @@
 </div>
 
 <style>
+    .ui-button.cancelDialogButton {
+        border: 1px solid #aaaaaa
+        /*{borderColorContent}*/
+    ;
+        color: #FF0000
+        /*{fcContent}*/
+    ;
+    }
+
+    .ui-button.confirmDialogButton {
+        border: 1px solid #aaaaaa
+        /*{borderColorContent}*/
+    ;
+        color: forestgreen;
+        /*{fcContent}*/
+    ;
+    }
+
+    .titleDialogClass {
+        background: #89C13E;
+        font-weight: bold;
+    }
+
     .strikeout {
         font-size: 1em;
         position: relative;
@@ -306,7 +381,7 @@
     var demande_beneficiaire_table = $('#liste_demandes_DEMANDE_DESTINATAIRE_VIREMENT').DataTable( {
         scrollCollapse: true,
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+            "url": "http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
         },
         /*"dom": '<"top"if>rt<"bottom"lp><"clear">',*/
         dom: 'Bfrtip',
@@ -372,5 +447,115 @@
     } );*/
 
 </script>
+
+<script>
+    $("#btn_validate_demande").click(function(event){
+
+    });
+    $("button").on("click", function(ev){
+        ev.preventDefault(); // preventDefault should suffice, no return false
+
+        var href = $(this).parent().attr('href');
+        var demande_type = $(this).data("demande_type");
+        var title, dialog_content;
+
+        switch (demande_type){
+            case "{{ constant('App\\Entity\\Demandes::DEMANDE_DECOUVERT_AUTORISE') }}":
+                var title = "Montant du découvert autorisé";
+                var dialog_content = "  <input type=\"text\" class=\"form-control\" id=\"decouvert_autorise\" name=\"decouvert_autorise\" placeholder=\"Montant\">\n";
+                break;
+
+            case "{{ constant('App\\Entity\\Demandes::DEMANDE_COMPTE_JOINT') }}":
+                var title = "Co-titulaire du compte";
+                var dialog_content = "  <input type=\"text\" class=\"form-control\" id=\"co_titulaire\" name=\"co_titulaire\" placeholder=\"Co titulaire\">\n";
+                break;
+
+            default:
+                window.location = href;
+                return true;
+                break;
+
+        }
+
+        var dialog = $("" +
+            "<div id='div_dialog'>\n" +
+            dialog_content +
+            "</div> \n" +
+            "");
+
+        $(dialog).dialog({
+            title: title,
+            classes: {
+                "ui-dialog": "highlight",
+                "ui-dialog-titlebar": "titleDialogClass",
+            },
+            resizable: false,
+            autoOpen: false,
+            modal: true,
+            buttons: [
+                {
+                    text: 'Annuler',
+                    class: 'cancelDialogButton',
+                    click: function() {
+                        $( this ).dialog( "close" );
+                    }
+                },
+                {
+                    text: 'Valider',
+                    class: 'confirmDialogButton',
+                    click: function(event) {
+                        var href = $('#div_dialog').data('opener_href');
+                        var demande_type = $('#div_dialog').data('demande_type');
+
+                        switch (demande_type){
+                            case "{{ constant('App\\Entity\\Demandes::DEMANDE_DECOUVERT_AUTORISE') }}":
+                                href = href + "/" + $('#decouvert_autorise').val();
+                                break;
+
+                            case "{{ constant('App\\Entity\\Demandes::DEMANDE_COMPTE_JOINT') }}":
+                                href = href + "/" + $('#co_titulaire').val();
+                                break;
+                        }
+
+                        window.location = href;
+                        $(this).dialog("close");
+                        return true;
+                   }
+                }
+            ],
+            close: function () {
+                //$( this ).remove();
+            },
+        });
+
+        var data = dialog.data();
+        data.opener_href = href;
+        data.title = title;
+        data.demande_type = demande_type;
+        $(dialog).dialog('open');
+
+    });
+</script>
+
+{#<script>
+    var columns = [{name: 'Color', minWidth: '100px'}, {name: 'Hex', minWidth:'70px'}],
+    colors = [['Red', '#f00'], ['Green', '#0f0'], ['Blue', '#00f']];
+
+    $("#search").mcautocomplete({
+    columns: columns,
+    source: colors
+    });
+
+    $("#search").mcautocomplete({
+        showHeader: true,
+    columns: columns,
+    source: colors,
+    select: function(event, ui) {
+        this.value = (ui.item ? ui.item[0]: '');
+        return false;
+    }
+    });
+</script>#}
+
 
 {% endblock %}
