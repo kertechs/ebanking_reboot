@@ -8,6 +8,10 @@
 
 {% block body %}
     <div class="container-fluid bg-grey" style="padding-top: 55px;">
+        {% block flash_messages %}
+            {% include 'espace_client/flash_messages.html.twig' %}
+        {% endblock %}
+
 
         <div class="container-fluid bg-grey">
             <div class="container">

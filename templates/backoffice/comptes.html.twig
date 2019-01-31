@@ -9,7 +9,194 @@
 {% block body %}
 
     <div class="container-fluid" style="padding-top: 55px;">
-        YO
+        {#{{ dump(clients) }}#}
+        <table id="all_clients" class="table table-striped " cellspacing="0" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th></th>{# icon for row details #}
+                    <th>Opérations</th>{# hidden , column just to host datas #}
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Code postal</th>
+                    <th>Ville</th>
+                    <th>Comptes</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for client in clients %}
+                {% set _operations = [] %}
+                {% for _operation in client.operations %}
+                    {% set _montant = _operation.montant ~ ' €' %}
+                    {% set _compte_emetteur = _operation.compteEmetteur %}
+                    {% if _compte_emetteur.iban is defined and _montant < 0 %}
+                        {% set _iban = _compte_emetteur.iban %}
+                    {% else %}
+                        {% set _iban = '' %}
+                    {% endif %}
+
+                    {% set _operations = _operations|merge([{
+                        iban: _iban,
+                        date_execution: _operation.dateExecution|date("d/m/Y"),
+                        created_by: _operation.createdBy,
+                        type: _operation.TypeOperationLbl,
+                        details: _operation.details,
+                        montant:  _operation.montant ~ ' €',
+                    }]) %}
+                {% endfor %}
+
+                <tr>
+                    <td></td>
+                    <td>{{ _operations|json_encode() }}</td>
+                    <td>{{ client.prenom }}</td>
+                    <td>{{ client.nom }}</td>
+                    <td>{{ client.email }}</td>
+                    <td>{{ client.codePostal}}</td>
+                    <td>{{ client.ville}}</td>
+                    <td>
+                        {% for compte in client.comptes %}
+                            {{ compte.iban }}{% if (client.comptes|length) %}<br />{% endif %}
+                        {% endfor %}
+                    </td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+
+            <tfoot></tfoot>
+        </table>
     </div>
 
+    <style>
+        /* For small screen */
+        .row :nth-child(even){
+            background-color: #dcdcdc;
+        }
+        .row :nth-child(odd){
+            background-color: #aaaaaa;
+        }
+
+        /* For medium screen */
+        @media (min-width: 768px) {
+            .row :nth-child(4n), .row :nth-child(4n-1) {
+                background: #dcdcdc;
+            }
+            .row :nth-child(4n-2), .row :nth-child(4n-3) {
+                background: #aaaaaa;
+            }
+        }
+
+        /* For large screen */
+        @media (min-width: 992px) {
+            .row :nth-child(6n), .row :nth-child(6n-1), .row :nth-child(6n-2) {
+                background: #dcdcdc;
+            }
+            .row :nth-child(6n-3), .row :nth-child(6n-4), .row :nth-child(6n-5) {
+                background: #aaaaaa;
+            }
+        }
+
+        td.details-control {
+            background: url('https://datatables.net/examples/resources/details_open.png') no-repeat center center;
+            cursor: pointer;
+        }
+
+        tr.shown td.details-control {
+            background: url('https://datatables.net/examples/resources/details_close.png') no-repeat center center;
+        }
+    </style>
+
+    <script>
+        /* Formatting function for row details - modify as you need */
+        function all_clients_table_details_format ( d ) {
+            // `d` is the original data object for the row
+            if (d == undefined || d.client_operations == undefined || d.client_operations == null || !d.client_operations || d.client_operations == "null"){
+                return '<div class="alert alert-danger" role="alert">Aucune information fournie/trouvée</div>';
+            }
+
+            var client_operations = JSON.parse(d.client_operations);
+            console.log(d.client_operations);
+            var _return;
+
+            /*(json_details_demande.hasOwnProperty('iban'))?iban=json_details_demande.iban:iban=null;
+            (json_details_demande.hasOwnProperty('beneficiaire'))?beneficiaire=json_details_demande.beneficiaire:beneficiaire=null;
+            (json_details_demande.hasOwnProperty('iban_is_ok'))?iban_is_ok=json_details_demande.iban_is_ok:iban_is_ok=false;
+            (json_details_demande.hasOwnProperty('matching_compte_found'))?matching_compte_found=json_details_demande.matching_compte_found:matching_compte_found=null;*/
+
+            for (var _operation_index in client_operations){
+                console.log(_operation_index);
+                var _operation = client_operations[_operation_index];
+                _return += '<div class="row">';
+                _return += '<div class="col-md-2">'+_operation.iban+'</div>';
+                _return += '<div class="col-md-2">'+_operation.date_execution+'</div>';
+                _return += '<div class="col-md-2">'+_operation.created_by+'</div>';
+                _return += '<div class="col-md-2">'+_operation.type+'</div>';
+                _return += '<div class="col-md-2">'+_operation.details+'</div>';
+                _return += '<div class="col-md-2">'+_operation.montant+'</div>';
+                _return += '</div>';
+            }
+
+            return _return;
+        }
+
+        var all_clients_table = $('#all_clients').DataTable( {
+            scrollCollapse: true,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+            },
+            dom: 'Bfrtip',
+            select:"single",
+            responsive: true,
+            buttons: [
+            ]
+            ,"columns": [
+                {
+                    "data": "empty_col",
+                    "className": "details-control",
+                    "orderable":      false,
+                },
+                { "data": "client_operations" },
+                { "data": "client_prenom" },
+                { "data": "client_nom" },
+                { "data": "client_email" },
+                { "data": "client_code_postal" },
+                { "data": "client_ville" },
+                { "data": "client_comptes" },
+
+                {
+                    "data": "backoffice_actions_col",
+                    "orderable":      false,
+                },
+            ],
+            "columnDefs": [
+                {
+                    "targets": [ 1 ],
+                    "visible": false,
+                    "searchable": false
+                },
+                /*{
+                    "targets": [ 3 ],
+                    "visible": false
+                }*/
+            ],
+            "order": [[1, 'asc']]
+        } );
+
+        $('#all_clients tbody').on('click','td', function (){
+            var tr = $(this).closest('tr');
+            var row = all_clients_table.row( tr );
+            console.log(row.data());
+
+            if ( row.child.isShown() ) {
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                row.child( all_clients_table_details_format(row.data()) ).show();
+                tr.addClass('shown');
+            }
+        });
+    </script>
 {% endblock %}

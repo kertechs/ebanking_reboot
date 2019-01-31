@@ -8,8 +8,37 @@
 
 {% block body %}
 
+    {% if app.session.flashbag.peek('success')|length > 0 %}
+        <div class="alert alert-warning">
+            {% for message in app.flashes('success') %}
+                {{ message }}<br />
+            {% endfor %}
+        </div>
+    {% else %}
+    {% endif %}
+
+    {% if app.session.flashbag.peek('error')|length > 0 %}
+        <div class="alert alert-danger">
+            {% for message in app.flashes('error') %}
+                {{ message }}
+            {% endfor %}
+        </div>
+    {% else %}
+    {% endif %}
+
     <div class="container-fluid" style="padding-top: 55px;">
-        YO
+        <div class="container-fluid bg-grey">
+            <div class="container">
+                <legend>Effectuer un virement</legend>
+
+                {{ form_start(backoffice_virement_form) }}
+                {#<div class="text-center">
+                    <button type="submit" class="btn btn-primary">Valider la demande</button>
+                </div>#}
+                {{ form_end(backoffice_virement_form) }}
+
+            </div>
+        </div>
     </div>
 
 {% endblock %}

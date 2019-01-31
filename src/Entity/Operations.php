@@ -21,6 +21,7 @@ class Operations
 
     const TYPE_RETRAIT= "TYPE_RETRAIT";
     const TYPE_VIREMENT = "TYPE_VIREMENT";
+    const TYPE_VIREMENT_BACKOFFICE = "TYPE_VIREMENT_BACKOFFICE";
     const TYPE_CHEQUE = "TYPE_CHEQUE";
     const TYPE_CB = "TYPE_CB_IMMEDIAT";
     const TYPE_CB_DIFFERE = "TYPE_CB_DIFFERE";
@@ -28,11 +29,12 @@ class Operations
 
     const TYPES_LABELS = [
         self::TYPE_RETRAIT => "Retrait espèces",
-        self::TYPE_VIREMENT => "Virement banquaire",
+        self::TYPE_VIREMENT => "Virement bancaire",
+        self::TYPE_VIREMENT_BACKOFFICE => "Virement bancaire (gestionnaire de compte)",
         self::TYPE_CHEQUE => "Chèque",
         self::TYPE_CB => "Paiement CB",
         self::TYPE_CB_DIFFERE => "Paiement CB débit différé",
-        self::TYPE_FRAIS => "Frais banquaires",
+        self::TYPE_FRAIS => "Frais bancaires",
     ];
 
     /**
@@ -66,6 +68,11 @@ class Operations
      * @ORM\ManyToOne(targetEntity="App\Entity\Comptes")
      */
     private $compte_emetteur;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Comptes")
+     */
+    private $compte_destinataire;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -177,6 +184,18 @@ class Operations
     public function setDestinataireCompteId(?int $destinataire_compte_id): self
     {
         $this->destinataire_compte_id = $destinataire_compte_id;
+        return $this;
+    }
+
+    public function getCompteDestinataire(): ?Comptes
+    {
+        return $this->compte_destinataire;
+    }
+
+    public function setCompteDestinataire(?Comptes $compte):self
+    {
+        $this->compte_destinataire = $compte;
+        $this->setDestinataireCompteId($compte->getId());
         return $this;
     }
 

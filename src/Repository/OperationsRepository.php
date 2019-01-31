@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Client;
 use App\Entity\Comptes;
 use App\Entity\Operations;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -35,6 +36,34 @@ class OperationsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
             ;
+    }
+
+    /**
+     * @return Operations[] Returns an array of Operations objects
+     */
+    public function findByClient(Client $client)
+    {
+        $operations = [];
+        $comptes = $client->getComptes();
+        foreach ($comptes as $_compte)
+        {
+            /**
+             * @var $_operations = [] Operations
+             */
+            $_operations = $this->findByCompte($_compte);
+            foreach ($_operations as $idx => $_operation)
+            {
+                if ($_compte->getId() == $_operation->getEmetteurCompteId())
+                {
+                    $_montant = $_operation->getMontant();
+                    $_operation->setMontant($_montant * (-1));
+                    $_operations[$idx] = $_operation;
+                }
+            }
+            $operations += $_operations;
+        }
+
+        return $operations;
     }
 
     // /**

@@ -74,6 +74,7 @@ class Comptes
      */
     private $agence_id;
 
+
     /**
      * @ORM\Column(type="integer", options={"unsigned"=true}, columnDefinition="INT(2) UNSIGNED ZEROFILL", nullable=true)
      */

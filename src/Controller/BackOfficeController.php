@@ -6,6 +6,8 @@ use App\Entity\Beneficiaires;
 use App\Entity\Demandes;
 use App\Entity\Operations;
 use App\Entity\User;
+use App\Form\BackofficeMakesOperationType;
+use App\Repository\ClientRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
@@ -13,6 +15,7 @@ use Dompdf\Options;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Console\Tests\Command\CommandTest;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Client;
 use App\Entity\Agences;
@@ -25,6 +28,12 @@ use Swift_Mailer;
 
 class BackOfficeController extends AbstractController
 {
+    public function __construct(ClientRepository $clientRepository, RequestStack $requestStack)
+    {
+        $this->client_repository = $clientRepository;
+        $this->request = $requestStack->getCurrentRequest();
+    }
+
     public function index()
     {
         /*
@@ -118,17 +127,58 @@ class BackOfficeController extends AbstractController
 
     public function comptes()
     {
+        $clientRepository = $this->client_repository;
+        $clients = $clientRepository->findByStatus(Client::CURRENT);
+        foreach ($clients as $idx => $client)
+        {
+            $operations = $this->getDoctrine()
+                ->getRepository(Operations::class)
+                ->findByClient($client);
+            $client->setOperations($operations);
+            $clients[$idx] = $client;
+        }
+
+        dump($clients);
+
         return $this->render('backoffice/comptes.html.twig', [
             'controller_name' => 'BackOfficeController',
-            'context_entry' => 'Comptes clients'
+            'context_entry' => 'Comptes clients',
+            'clients' => $clients,
         ]);
     }
 
-    public function virements()
+    public function virements(EntityManagerInterface $em)
     {
+        $request = $this->request;
+        $form = $this->createForm(BackofficeMakesOperationType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /**
+             * @var $operation Operations
+             */
+            $operation = $form->getData();
+            //dd($operation);
+            $operation->setTypeOperation(Operations::TYPE_VIREMENT_BACKOFFICE);
+            $operation->setDateExecution( new \DateTime() );
+            if ($operation_result = $operation->execute($em))
+            {
+                $this->addFlash('success', 'Votre opération a bien été enregistrée');
+            }
+            else
+            {
+                $this->addFlash('error', 'Votre opération n\'a pas pu être enregistrée. Vérifiez le solde du compte');
+            }
+            $em->persist($operation);
+            $em->flush();
+
+            return $this->redirectToRoute('bankers_virements');
+        }
+
         return $this->render('backoffice/virements.html.twig', [
             'controller_name' => 'BackOfficeController',
-            'context_entry' => 'Virements'
+            'context_entry' => 'Virements',
+            'backoffice_virement_form' => $form->createView()
         ]);
     }
 

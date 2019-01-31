@@ -139,6 +139,7 @@ class Client
         $this->setCreatedAt(new \DateTime());
         $this->comptes = new ArrayCollection();
         $this->demandes = new ArrayCollection();
+        $this->operations = new ArrayCollection();
         //$this->setCreatedBy();
 
         $this->setHasCompteJoint(false);
@@ -567,6 +568,20 @@ class Client
             }
         }
 
+        return $this;
+    }
+
+    /**
+     * @return Collection|Operations[]
+     */
+    public function getOperations(): Collection
+    {
+        return $this->operations;
+    }
+
+    public function setOperations($operations): self
+    {
+        $this->operations = $operations;
         return $this;
     }
 
