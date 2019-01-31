@@ -12,6 +12,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ClientRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Client
 {
@@ -134,7 +135,7 @@ class Client
         $this->setHasCompteEpargne(false);
         $this->setHasDecouvertAutorise(false);
 
-        if ($this->id)
+        /*if ($this->id)
         {
             $comptes = $this->getComptes();
             foreach ($comptes as $compte)
@@ -166,8 +167,43 @@ class Client
                     break;
                 }
             }
-        }
+        }*/
         $this->beneficiaires = new ArrayCollection();
+    }
+
+    /** @ORM\PostLoad() */
+    public function doOnPostLoad()
+    {
+        $comptes = $this->getComptes();
+        foreach ($comptes as $compte)
+        {
+            $type_compte = $compte->getType();
+            $nb_types_found = 0;
+            switch($type_compte)
+            {
+                case Comptes::COMPTE_JOINT:
+                    $nb_types_found++;
+                    $this->setHasCompteJoint(true);
+                    break;
+
+                case Comptes::COMPTE_EPARGNE:
+                    $nb_types_found++;
+                    $this->setHasCompteEpargne(true);
+                    break;
+
+                case Comptes::COMPTE_COURANT:
+                    if ($compte->getDecouvertAutorise() == true)
+                    {
+                        $this->setHasDecouvertAutorise(true);
+                    }
+                    break;
+            }
+
+            if ($nb_types_found >= 2)
+            {
+                break;
+            }
+        }
     }
 
     public function getHasCompteEpargne(): ?bool
