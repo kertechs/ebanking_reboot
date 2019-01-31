@@ -117,6 +117,16 @@ class Client
      */
     private $beneficiaires;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Chequiers", mappedBy="Client")
+     */
+    private $chequiers;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CartesBancaires", mappedBy="Client")
+     */
+    private $cartesBancaires;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -169,6 +179,8 @@ class Client
             }
         }*/
         $this->beneficiaires = new ArrayCollection();
+        $this->chequiers = new ArrayCollection();
+        $this->cartesBancaires = new ArrayCollection();
     }
 
     /** @ORM\PostLoad() */
@@ -490,6 +502,68 @@ class Client
             // set the owning side to null (unless already changed)
             if ($beneficiaire->getClient() === $this) {
                 $beneficiaire->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Chequiers[]
+     */
+    public function getChequiers(): Collection
+    {
+        return $this->chequiers;
+    }
+
+    public function addChequier(Chequiers $chequier): self
+    {
+        if (!$this->chequiers->contains($chequier)) {
+            $this->chequiers[] = $chequier;
+            $chequier->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeChequier(Chequiers $chequier): self
+    {
+        if ($this->chequiers->contains($chequier)) {
+            $this->chequiers->removeElement($chequier);
+            // set the owning side to null (unless already changed)
+            if ($chequier->getClient() === $this) {
+                $chequier->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CartesBancaires[]
+     */
+    public function getCartesBancaires(): Collection
+    {
+        return $this->cartesBancaires;
+    }
+
+    public function addCartesBancaire(CartesBancaires $cartesBancaire): self
+    {
+        if (!$this->cartesBancaires->contains($cartesBancaire)) {
+            $this->cartesBancaires[] = $cartesBancaire;
+            $cartesBancaire->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCartesBancaire(CartesBancaires $cartesBancaire): self
+    {
+        if ($this->cartesBancaires->contains($cartesBancaire)) {
+            $this->cartesBancaires->removeElement($cartesBancaire);
+            // set the owning side to null (unless already changed)
+            if ($cartesBancaire->getClient() === $this) {
+                $cartesBancaire->setClient(null);
             }
         }
 

@@ -89,12 +89,18 @@ class Comptes
      */
     private $compte_client_id;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CartesBancaires", mappedBy="Compte")
+     */
+    private $cartesBancaires;
+
     public function __construct()
     {
         $this->compte_client_id = new ArrayCollection();
         $this->decouvert_autorise = false;
         $this->decouvert_maximum = 0;
         $this->solde = 0;
+        $this->cartesBancaires = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -222,6 +228,37 @@ class Comptes
     {
         if ($this->compte_client_id->contains($compteClientId)) {
             $this->compte_client_id->removeElement($compteClientId);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CartesBancaires[]
+     */
+    public function getCartesBancaires(): Collection
+    {
+        return $this->cartesBancaires;
+    }
+
+    public function addCartesBancaire(CartesBancaires $cartesBancaire): self
+    {
+        if (!$this->cartesBancaires->contains($cartesBancaire)) {
+            $this->cartesBancaires[] = $cartesBancaire;
+            $cartesBancaire->setCompte($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCartesBancaire(CartesBancaires $cartesBancaire): self
+    {
+        if ($this->cartesBancaires->contains($cartesBancaire)) {
+            $this->cartesBancaires->removeElement($cartesBancaire);
+            // set the owning side to null (unless already changed)
+            if ($cartesBancaire->getCompte() === $this) {
+                $cartesBancaire->setCompte(null);
+            }
         }
 
         return $this;
