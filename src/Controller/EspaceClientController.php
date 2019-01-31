@@ -6,6 +6,7 @@ use App\Entity\Client;
 use App\Entity\Comptes;
 use App\Entity\Demandes;
 use App\Entity\Operations;
+use App\Form\ClientMakesOperationType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -78,7 +79,7 @@ class EspaceClientController extends AbstractController
         return $this->redirectToRoute('clients_logout');
     }
 
-    public function new_virement()
+    public function new_virement(EntityManagerInterface $em, Request $request)
     {
         $client_user = $this->getUser();
         $client_id = $client_user->getClientId();
@@ -87,9 +88,44 @@ class EspaceClientController extends AbstractController
             ->find($client_id)
         ;
 
+        $form = $this->createForm(ClientMakesOperationType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /**
+             * @var $operation Operations
+             */
+            $operation = $form->getData();
+            //dd($operation);
+            $operation->setTypeOperation(Operations::TYPE_VIREMENT);
+            $operation->setDateExecution( new \DateTime() );
+            if ($operation_result = $operation->execute($em))
+            {
+                $this->addFlash('success', 'Votre opération a bien été enregistrée');
+            }
+            else
+            {
+                $this->addFlash('error', 'Votre opération n\'a pas pu être enregistrée. Vérifiez le solde de votre compte');
+            }
+            $em->persist($operation);
+            $em->flush();
+
+            return $this->redirectToRoute('clients_virement_new');
+            /*unset($form);
+            $form = $this->createForm(ClientMakesOperationType::class);
+
+            return $this->render('espace_client/virements/nouveau.html.twig', [
+                'operation_result' => $operation_result,
+                'controller_name' => 'EspaceClientController',
+                'client' => $client,
+                'operation' => $operation,
+                'client_virement_form' => $form->createView(),
+            ]);*/
+        }
+
         return $this->render('espace_client/virements/nouveau.html.twig', [
             'controller_name' => 'EspaceClientController',
             'client' => $client,
+            'client_virement_form' => $form->createView(),
         ]);
     }
 

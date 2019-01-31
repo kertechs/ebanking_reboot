@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Beneficiaires;
 use App\Entity\Client;
+use App\Entity\Comptes;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -32,6 +34,22 @@ class ClientRepository extends ServiceEntityRepository
             ->setMaxResults(100)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @return Comptes[]
+     */
+    public function findAllComptes(Client $client)
+    {
+        return $client->getComptes();
+    }
+
+    /**
+     * @return Beneficiaires[]
+     */
+    public function findAllBeneficiaires(Client $client)
+    {
+        return $client->getBeneficiaires();
     }
 
     // /**

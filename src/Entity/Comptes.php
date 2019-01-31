@@ -24,11 +24,17 @@ class Comptes
     const COMPTE_COURANT = "COMPTE_COURANT";
     const COMPTE_EPARGNE = "COMPTE_EPARGNE";
     const COMPTE_JOINT = "COMPTE_JOINT";
+    const COMPTE_AGENCE = "COMPTE_AGENCE";
+    const COMPTE_BANQUE = "COMPTE_BANQUE";
+    const COMPTE_BANK = "COMPTE_BANK";
 
     const COMPTES_LABELS = [
         self::COMPTE_COURANT => "Compte courant",
         self::COMPTE_EPARGNE => "Compte épargne",
         self::COMPTE_JOINT => "Compte joint",
+        self::COMPTE_AGENCE => "Compte agence",
+        self::COMPTE_BANQUE => "Compte banque",
+        self::COMPTE_BANK => "Compte banque",
     ];
 
     /**

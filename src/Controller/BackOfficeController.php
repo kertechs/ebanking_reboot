@@ -257,6 +257,7 @@ class BackOfficeController extends AbstractController
                             $beneficiaire = new Beneficiaires();
                             $beneficiaire->setClient($client);
                             $beneficiaire->setCompte($compte);
+                            $beneficiaire->setNom($demande_details['beneficiaire']);
                             $em->persist($beneficiaire);
 
                             $demande->setStatus(Demandes::STATUS_GRANTED);

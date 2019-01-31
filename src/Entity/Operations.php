@@ -63,9 +63,19 @@ class Operations
     private $montant;
 
     /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Comptes")
+     */
+    private $compte_emetteur;
+
+    /**
      * @ORM\Column(type="integer", nullable=true)
      */
     private $emetteur_compte_id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Beneficiaires")
+     */
+    private $beneficiaire;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -147,6 +157,18 @@ class Operations
         return $this;
     }
 
+    public function getCompteEmetteur(): ?Comptes
+    {
+        return $this->compte_emetteur;
+    }
+
+    public function setCompteEmetteur(?Comptes $compte):self
+    {
+        $this->compte_emetteur = $compte;
+        $this->setEmetteurCompteId($compte->getId());
+        return $this;
+    }
+
     public function getDestinataireCompteId(): ?int
     {
         return $this->destinataire_compte_id;
@@ -155,7 +177,18 @@ class Operations
     public function setDestinataireCompteId(?int $destinataire_compte_id): self
     {
         $this->destinataire_compte_id = $destinataire_compte_id;
+        return $this;
+    }
 
+    public function getBeneficiaire(): ?Beneficiaires
+    {
+        return $this->beneficiaire;
+    }
+
+    public function setBeneficiaire(?Beneficiaires $beneficiaires):self
+    {
+        $this->beneficiaire = $beneficiaires;
+        $this->setDestinataireCompteId($beneficiaires->getCompte()->getId());
         return $this;
     }
 
