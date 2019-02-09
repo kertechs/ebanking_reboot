@@ -113,6 +113,11 @@ clients_commander_cb:
     article: "cb"
     confirm: null
 
+clients_auth_pad:
+  path: /auth/pad
+  host: "clients.banquedauphine.online"
+  controller: App\Controller\EspaceClientController::auth_pad
+
 clients_logout:
   path:       /logout
   host:       "clients.banquedauphine.online"

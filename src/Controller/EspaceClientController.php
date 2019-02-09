@@ -12,17 +12,24 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Profiler\Profiler;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class EspaceClientController extends AbstractController
 {
     private $em;
     private $request;
+    private $appKernel;
 
-    public function __construct(EntityManagerInterface $em, RequestStack $requestStack)
+    public function __construct(EntityManagerInterface $em, RequestStack $requestStack, KernelInterface $appKernel, Profiler $profiler)
     {
         $request = $requestStack->getCurrentRequest();
         $this->em = $em;
         $this->request = $request;
+        $this->appKernel = $appKernel;
+        $this->profiler = $profiler;
     }
 
     /**
@@ -232,5 +239,69 @@ class EspaceClientController extends AbstractController
             '_article' => $article,
             'confirm' => $confirm,
         ]);
+    }
+
+    public function auth_pad()
+    {
+        $session = $this->get('session');
+        //dump($session);
+        $tab = $pad_tab = $session->get('pad_tab');
+        $cellwidth = $session->get('pad_tab_cell_width');
+
+        //dump($pad_tab);
+        //dd($session);
+
+        $tab2 = array();
+        $width = $height = ceil(sqrt(count($tab)))*$cellwidth;
+        /*error_log('count($tab) : ' . count($tab));
+        error_log('sqrt(count($tab)) : ' . sqrt(count($tab)));
+        error_log('ceil(sqrt(count($tab))) : ' . ceil(sqrt(count($tab))));*/
+
+        $image = imagecreatetruecolor($width,$height);
+
+        $white = imagecolorallocate($image, 255, 255, 255);
+        $grey = imagecolorallocate($image, 128, 128, 128);
+        $black = imagecolorallocate($image, 0, 0, 0);
+        $red = imagecolorallocate($image, 255, 0, 0);
+        $blue = imagecolorallocate($image, 0, 0, 255);
+        imagefilledrectangle($image, 0, 0, $width-1, $height-1, $white);
+
+        $font = $this->appKernel->getProjectDir();
+        $font .= '/public/img/arial.ttf';
+        foreach ($tab as $i => $val)
+        {
+            if ($val)
+            {
+                $tab2[$i] = hash('sha256', $val);
+            }
+            if ($i%($width/$cellwidth) == 0)
+            {
+                $x = 9 + $cellwidth*(floor($i/($width/$cellwidth)));
+            }
+            $y = 22 + $cellwidth*($i%($width/$cellwidth));
+            imagettftext($image, 16, 0, $x+4, $y+4, $grey, $font, $tab[$i]);
+            imagettftext($image, 16, 0, $x-2, $y-2, $blue, $font, $tab[$i]);
+        }
+        //error_log('$tab2 = '.print_r($tab2, true));
+
+        for ($i=0;$i<($width/$cellwidth - 1);$i++)
+        {
+            imageline ($image, 0, $cellwidth + $cellwidth*$i, $width, $cellwidth + $cellwidth*$i, $black);
+            imageline ($image, $cellwidth * ( 1 + $i), 0, $cellwidth * (1 + $i), $height, $black);
+        }
+
+        $image_name = 'clavier.png';
+        $headers = array(
+            'Content-Type'     => 'image/png',
+            'Content-Disposition' => 'inline; filename="'.$image_name.'"');
+        //$this->profiler->disable();
+
+        ob_start();
+        imagepng($image);
+        $str_img = ob_get_contents();
+        ob_end_clean();
+
+        imagedestroy($image);
+        return new Response($str_img, 200, $headers);
     }
 }

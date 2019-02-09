@@ -52,9 +52,23 @@ class UserLoginAuthenticator extends AbstractFormLoginAuthenticator
 
     public function getCredentials(Request $request)
     {
+        $password = '';
+
+        $session = $request->getSession();
+        //dump($session);
+        $pad_tab = $session->get('pad_tab');
+
+        $password_coordinates = explode('-', $request->request->get('password'));
+        foreach ($password_coordinates as $_coordinate)
+        {
+            $password .= $pad_tab[$_coordinate];
+        }
+        //dump($password);
+
         $credentials = [
             'email' => $request->request->get('email'),
-            'password' => $request->request->get('password'),
+            //'password' => $request->request->get('password'),
+            'password' => $password,
             'csrf_token' => $request->request->get('_csrf_token'),
         ];
         $request->getSession()->set(

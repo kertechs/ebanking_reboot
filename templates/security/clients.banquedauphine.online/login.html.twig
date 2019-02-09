@@ -28,7 +28,34 @@
             <div class="form-group">
                 {#<label for="inputPassword" class="sr-only">Mot de passe</label>#}
                 <label for="inputPassword">Mot de passe</label>
-                <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Mot de passe" required>
+                <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Mot de passe" required readonly onclick="javascript: show_auth_pad(this);">
+            </div>
+
+            <div id="auth_pad" align="center" style="display: none;">
+                <img src="{{ path('clients_auth_pad') }}" usemap="#auth_pad_map" border="1" />
+                <map name="auth_pad_map" id="auth_pad_map">
+                    {% set iterator = 0 %}
+                    {% set nb_lines = pad_tab_height/pad_tab_cell_width %}
+                    {% set nb_cols = pad_tab_width/pad_tab_cell_width %}
+
+                    {% for num_line in 0..nb_lines-1 %}
+                        {% set iterator = num_line %}
+                        {% for num_col in 0..nb_cols-1 %}
+                            {%  set x1 = (num_col)*pad_tab_cell_width %}
+                            {%  set y1 = (num_line)*pad_tab_cell_width %}
+                            {%  set x2 = (num_col+1)*pad_tab_cell_width %}
+                            {%  set y2 = (num_line+1)*pad_tab_cell_width %}
+                            <area shape="rect" coords="{{ x1 }},{{ y1 }},{{ x2 }},{{ y2 }}" href="#" onclick="javascript : bloc('{{ iterator }}')" />
+                            {% set iterator = iterator + nb_cols %}
+                        {% endfor %}
+                    {% endfor %}
+
+                    {% for idx in pad_tab %}
+                        {% set iterator = iterator + 1 %}
+                    {% endfor %}
+
+                </map>
+                <br /><br />
             </div>
 
             <input type="hidden" name="_csrf_token"
@@ -52,6 +79,8 @@
             #}
 
             <div class="text-center">
+                <button type="reset" class="btn btn-lg">Annuler</button>
+                &nbsp;&nbsp;&nbsp;
                 <button type="submit" class="btn btn-lg">Se connecter</button>
             </div>
 
@@ -59,6 +88,37 @@
     </div>
 </form>
 </div>
+
+<script type="text/javascript">
+    function show_auth_pad(dom_elem)
+    {
+        $('#auth_pad').show();
+    }
+
+    function bloc ( idx )
+    {
+        if ( !$('#inputPassword').val() )
+        {
+            $('#inputPassword').val(idx);
+        }
+        else
+        {
+            var pw_val = $('#inputPassword').val();
+            var tab_pw_val = pw_val.split('-');
+            if (tab_pw_val.length < 6)
+            {
+                $('#inputPassword').val(pw_val + '-' + idx)
+                $('#inputPassword').css("border","1px solid black");
+            }
+            else
+            {
+                $('#inputPassword').css("border","1px solid red");
+            }
+
+            //alert($('#inputPassword').val());
+        }
+    }
+</script>
 {% endblock %}
 
 
