@@ -107,8 +107,14 @@
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
+    "lcobucci/jwt": {
+        "version": "3.2.5"
+    },
     "monolog/monolog": {
         "version": "1.24.0"
+    },
+    "nexmo/client": {
+        "version": "1.6.2"
     },
     "nikic/php-parser": {
         "version": "v4.2.0"
@@ -121,6 +127,15 @@
     },
     "phenx/php-svg-lib": {
         "version": "v0.3.2"
+    },
+    "php-http/guzzle6-adapter": {
+        "version": "v1.1.1"
+    },
+    "php-http/httplug": {
+        "version": "v1.1.0"
+    },
+    "php-http/promise": {
+        "version": "v1.0.0"
     },
     "phpdocumentor/reflection-common": {
         "version": "1.0.1"
@@ -454,6 +469,9 @@
     },
     "zendframework/zend-code": {
         "version": "3.3.1"
+    },
+    "zendframework/zend-diactoros": {
+        "version": "1.8.6"
     },
     "zendframework/zend-eventmanager": {
         "version": "3.2.1"
