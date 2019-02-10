@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace Client{% endblock %}
+
+{% block navbar %}
+    {% include 'espace_client/navbar_authenticated.html.twig' %}
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid bg-grey" style="padding-top: 55px;">
+    {% block flash_messages %}
+        {% include 'espace_client/flash_messages.html.twig' %}
+    {% endblock %}
+
+
+    <div class="container-fluid bg-grey">
+        <div class="container">
+            <legend>Editer mon compte</legend>
+
+            {#{{ form_start(client_profile_form) }}
+            {{ form_end(client_profile_form) }}#}
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -241,6 +241,21 @@ class EspaceClientController extends AbstractController
         ]);
     }
 
+    public function profile()
+    {
+        $client_user = $this->getUser();
+        $client_id = $client_user->getClientId();
+        $client = $this->getDoctrine()
+            ->getRepository(Client::class)
+            ->find($client_id)
+        ;
+
+        return $this->render('espace_client/profile/profile.html.twig', [
+            'controller_name' => 'EspaceClientController',
+            'client' => $client,
+        ]);
+    }
+
     public function auth_pad()
     {
         $session = $this->get('session');

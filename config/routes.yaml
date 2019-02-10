@@ -118,6 +118,11 @@ clients_auth_pad:
   host: "clients.banquedauphine.online"
   controller: App\Controller\EspaceClientController::auth_pad
 
+clients_profile:
+  path: /profile
+  host: "clients.banquedauphine.online"
+  controller: App\Controller\EspaceClientController::profile
+
 clients_logout:
   path:       /logout
   host:       "clients.banquedauphine.online"

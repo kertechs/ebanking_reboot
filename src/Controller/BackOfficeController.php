@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Beneficiaires;
+use App\Entity\CartesBancaires;
+use App\Entity\Chequiers;
 use App\Entity\Demandes;
 use App\Entity\Operations;
 use App\Entity\User;
@@ -249,6 +251,79 @@ class BackOfficeController extends AbstractController
             $client = $demande->getClient();
             switch ($demande->getType())
             {
+                case Demandes::DEMANDE_CB:
+                    $cb = new CartesBancaires();
+                    $cb->setClient($client);
+                    $cb->setCompte($client->getCompteCourant());
+                    $em->persist($cb);
+
+                    $demande->setStatus(Demandes::STATUS_GRANTED);
+                    $em->persist($demande);
+                    $em->flush();
+
+                    $cb_password = rand(1000,9999);
+
+                    $this->sendCourrierClient($client,[
+                        'twig_template_file_name' => 'EnvoiCarteBleue',
+                        'twig_template_name' => 'courrierEnvoiCarteBleueClient.html.twig',
+                        'twig_parameters' => [
+                            'client' => $client,
+                        ],
+                        'swift_template_name' => 'notificationCourrierEnvoiCarteBleueClient.html.twig',
+                        'swift_parameters' => [
+                            'client' => $client,
+                        ],
+                        'swift_subject' => 'Envoi de votre carte bleue',
+                    ], $mailer);
+
+                    $this->sendCourrierClient($client,[
+                        'twig_template_file_name' => 'EnvoiMotDePasseCarteBleue',
+                        'twig_template_name' => 'courrierEnvoiMotDePasseCarteBleueClient.html.twig',
+                        'twig_parameters' => [
+                            'client' => $client,
+                            'cb_password' => $cb_password,
+                        ],
+                        'swift_template_name' => 'notificationCourrierEnvoiMotDePasseCarteBleueClient.html.twig',
+                        'swift_parameters' => [
+                            'client' => $client,
+                        ],
+                        'swift_subject' => 'Envoi du mot de passe de votre carte bleue',
+                    ], $mailer);
+
+
+                    $demande_ok = true;
+                    $this->addFlash('success', 'Carte bleue créée et expédiée.');
+
+                    break;
+
+                case Demandes::DEMANDE_CHEQUIER:
+                    $chequier = new Chequiers();
+                    $chequier->setClient($client);
+                    $chequier->setCompte($client->getCompteCourant());
+                    $em->persist($chequier);
+
+                    $demande->setStatus(Demandes::STATUS_GRANTED);
+                    $em->persist($demande);
+                    $em->flush();
+
+                    $this->sendCourrierClient($client,[
+                        'twig_template_file_name' => 'EnvoiChequier',
+                        'twig_template_name' => 'courrierEnvoiChequierClient.html.twig',
+                        'twig_parameters' => [
+                            'client' => $client,
+                        ],
+                        'swift_template_name' => 'notificationCourrierEnvoiChequierClient.html.twig',
+                        'swift_parameters' => [
+                            'client' => $client,
+                        ],
+                        'swift_subject' => 'Envoi de votre chequier',
+                    ], $mailer);
+
+                    $demande_ok = true;
+                    $this->addFlash('success', 'Chéquier expédié.');
+
+                    break;
+
                 case Demandes::DEMANDE_COMPTE_EPARGNE:
                     $new_compte = new Comptes();
                     $new_compte->setType(Comptes::COMPTE_EPARGNE);
@@ -256,6 +331,13 @@ class BackOfficeController extends AbstractController
 
                     $client->addCompte($new_compte);
                     $em->persist($client);
+
+                    //On ajoute immédiatement les nouveaux comptes épargnes et joints en tant que bénéficiaires
+                    $beneficiaire = new Beneficiaires();
+                    $beneficiaire->setClient($client);
+                    $beneficiaire->setCompte($new_compte);
+                    $beneficiaire->setNom($new_compte->getTypeLbl());
+                    $em->persist($beneficiaire);
 
                     $demande->setStatus(Demandes::STATUS_GRANTED);
                     $em->persist($demande);
@@ -266,12 +348,29 @@ class BackOfficeController extends AbstractController
                     break;
 
                 case Demandes::DEMANDE_COMPTE_JOINT:
+                    /*todo: prise en compte 2eme titulaire de compte*/
                     $new_compte = new Comptes();
                     $new_compte->setType(Comptes::COMPTE_JOINT);
                     $em->persist($new_compte);
 
                     $client->addCompte($new_compte);
                     $em->persist($client);
+
+                    /*$client2->addCompte($new_compte);
+                    $em->persist($client2);*/
+
+                    //On ajoute immédiatement les nouveaux comptes épargnes et joints en tant que bénéficiaires
+                    $beneficiaire = new Beneficiaires();
+                    $beneficiaire->setClient($client);
+                    $beneficiaire->setCompte($new_compte);
+                    $beneficiaire->setNom($new_compte->getTypeLbl());
+                    $em->persist($beneficiaire);
+
+                    /*$beneficiaire2 = new Beneficiaires();
+                    $beneficiaire2->setClient($client2);
+                    $beneficiaire2->setCompte($new_compte);
+                    $beneficiaire2->setNom($new_compte->getTypeLbl());
+                    $em->persist($beneficiaire2);*/
 
                     $demande->setStatus(Demandes::STATUS_GRANTED);
                     $em->persist($demande);
@@ -336,7 +435,7 @@ class BackOfficeController extends AbstractController
                     $comptes = $client->getComptes();
                     foreach ($comptes as $compte)
                     {
-                        if ($compte->getType() == Comptes::COMPTE_COURANT)
+                        if ($compte->getType() == Comptes::COMPTE_COURANT) //découvert autorisé sur compte courant uniquement
                         {
                             $compte->setDecouvertAutorise($decouvert_autorise);
                             $compte->setDecouvertMaximum($decouvert_montant_max);
@@ -462,7 +561,7 @@ class BackOfficeController extends AbstractController
                 $this->addFlash('error', 'Le virement de bienvenue a échoué');
             }
 
-            //Générer PDF bienvenue avec mot de passe
+            /*//Générer PDF bienvenue avec mot de passe
             // Configure Dompdf according to your needs
             $pdfOptions = new Options();
             $pdfOptions->set('defaultFont', 'Arial');
@@ -513,7 +612,22 @@ class BackOfficeController extends AbstractController
                     'text/html'
                 );
             $mailer->send($message);
-            //unlink($pdfFilepath);
+            //unlink($pdfFilepath);*/
+
+            $this->sendCourrierClient($client,[
+                'twig_template_file_name' => 'Bienvenue',
+                'twig_template_name' => 'courrierMotdepasseClient.html.twig',
+                'twig_parameters' => [
+                    'client' => $client,
+                    'ClientUser' => $user,
+                    'ClientPassword' => $plainpassword,
+                ],
+                'swift_template_name' => 'notificationBienvenue.html.twig',
+                'swift_parameters' => [
+                    'client' => $client,
+                ],
+                'swift_subject' => 'Suite à votre demande d\'inscription sur banquedauphine.online',
+            ], $mailer);
 
             //Add flash message
             $this->addFlash('success', 'Notification d\'accord envoyée à '
@@ -524,5 +638,38 @@ class BackOfficeController extends AbstractController
         }
 
         return $this->redirectToRoute('bankers');
+    }
+
+    function sendCourrierClient(Client $client, $courrier_options, \Swift_Mailer $mailer)
+    {
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $dompdf = new Dompdf($pdfOptions);
+
+        $html = $this->renderView('pdf/'.$courrier_options['twig_template_name'], $courrier_options['twig_parameters']);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $output = $dompdf->output();
+        $publicDirectory = '/tmp/';
+        $pdfFilepath =  $publicDirectory . '/'.$courrier_options['twig_template_file_name'].'-'.$client->getId().'.pdf';
+        file_put_contents($pdfFilepath, $output);
+
+
+        //Envoi email information
+        $message = (new \Swift_Message($courrier_options['swift_subject']))
+            ->setFrom('contact@banquedauphine.online')
+            ->setTo($client->getEmail())
+            ->attach(Swift_Attachment::fromPath($pdfFilepath))
+            ->setBody(
+                $this->renderView(
+                    'emails/'.$courrier_options['swift_template_name'],
+                    $courrier_options['swift_parameters']
+                ),
+                'text/html'
+            );
+        $mailer->send($message);
+        //unlink($pdfFilepath);
     }
 }

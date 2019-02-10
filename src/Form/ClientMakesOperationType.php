@@ -42,10 +42,6 @@ class ClientMakesOperationType extends AbstractType
 //            ->add('date_execution')
 //            ->add('type_operation')
 //            ->add('credit_debit')
-            ->add('montant', TextType::class, [
-                'label' => 'Montant',
-                'required' => true,
-            ])
             ->add('compte_emetteur', EntityType::class, [
                 'label' => 'Compte emetteur',
                 'choice_label' => function(Comptes $compte){
@@ -79,6 +75,10 @@ class ClientMakesOperationType extends AbstractType
                 'placeholder' => 'Sélectionner un compte bénéficiaire',
                 'required' => true,
                 'class' => Beneficiaires::class,
+            ])
+            ->add('montant', TextType::class, [
+                'label' => 'Montant',
+                'required' => true,
             ])
             ->add('details', TextType::class, [
                 'label' => 'Détails',

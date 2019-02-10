@@ -111,6 +111,8 @@ class Client
     private $has_compte_joint;
     private $has_decouvert_autorise;
     private $compte_courant;
+    private $compte_joint;
+    private $compte_epargne;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Beneficiaires", mappedBy="Client")
@@ -197,14 +199,17 @@ class Client
                 case Comptes::COMPTE_JOINT:
                     $nb_types_found++;
                     $this->setHasCompteJoint(true);
+                    $this->setCompteJoint($compte);
                     break;
 
                 case Comptes::COMPTE_EPARGNE:
                     $nb_types_found++;
                     $this->setHasCompteEpargne(true);
+                    $this->setCompteEpargne($compte);
                     break;
 
                 case Comptes::COMPTE_COURANT:
+                    $this->setCompteCourant($compte);
                     if ($compte->getDecouvertAutorise() == true)
                     {
                         $this->setHasDecouvertAutorise(true);
@@ -216,6 +221,18 @@ class Client
             {
                 break;
             }
+        }
+
+        $chequiers = $this->getChequiers();
+        if (count($chequiers))
+        {
+            $this->setHasChequier(true);
+        }
+
+        $cbs = $this->getCartesBancaires();
+        if (count($cbs))
+        {
+            $this->setHasCb(true);
         }
     }
 
@@ -367,6 +384,44 @@ class Client
         $this->civilite = $civilite;
 
         return $this;
+    }
+
+    public function setCompteEpargne(?Comptes $compte): self
+    {
+        $this->compte_epargne = $compte;
+        return $this;
+    }
+    public function getCompteEpargne(): ?Comptes
+    {
+        if ($this->compte_epargne) {
+            return $this->compte_epargne;
+        } else {
+            foreach ($this->getComptes() as $compte) {
+                if ($compte->getType() == Comptes::COMPTE_EPARGNE) {
+                    $this->setCompteEpargne($compte);
+                    break;
+                }
+            }
+        }
+    }
+
+    public function setCompteJoint(?Comptes $compte): self
+    {
+        $this->compte_joint = $compte;
+        return $this;
+    }
+    public function getCompteJoint(): ?Comptes
+    {
+        if ($this->compte_joint) {
+            return $this->compte_joint;
+        } else {
+            foreach ($this->getComptes() as $compte) {
+                if ($compte->getType() == Comptes::COMPTE_JOINT) {
+                    $this->setCompteJoint($compte);
+                    break;
+                }
+            }
+        }
     }
 
     public function setCompteCourant(?Comptes $compte): self

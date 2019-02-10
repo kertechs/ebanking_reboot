@@ -32,6 +32,7 @@
                     </ul>
                 </li>
 
+                {% if ( not (client.hasDecouvertAutorise and client.hasCompteEpargne and client.hasCompteJoint and client.hasChequier and client.hasCb) ) %}
                 <li class="dropdown
                     {{ macros.is_active('client_demander') }}"
                 >
@@ -83,6 +84,7 @@
                         {% endif %}
                     </ul>
                 </li>
+                {% endif %}
 
                 {#{% if (client.hasCb == false) %}
                 <li class="{{ macros.is_active('clients_commander_cb') }}">
@@ -101,7 +103,22 @@
                     </a>
                 </li>
                 {% endif %}#}
-
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#">
+                    <i class="fa fa-history" aria-hidden="true"></i>
+                    <span class="hidden-xs">
+                        &nbsp;|&nbsp;
+                    </span>
+                    </a>
+                </li>
+                <li class="{{ macros.is_active('clients_profile') }}">
+                    <a href="/profile" title="Compte" >
+                        <i class="fa fa-history" aria-hidden="true"></i>
+                        <span class="hidden-xs">Mon compte</span>
+                    </a>
+                </li>
                 <li>
                     <a href="/logout" title="Se déconnecter" >
                         <i class="fa fa-history" aria-hidden="true"></i>
