@@ -129,6 +129,11 @@ class Client
      */
     private $cartesBancaires;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $send_sms_notifications;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -637,6 +642,18 @@ class Client
     public function setOperations($operations): self
     {
         $this->operations = $operations;
+        return $this;
+    }
+
+    public function getSendSmsNotifications(): ?bool
+    {
+        return $this->send_sms_notifications;
+    }
+
+    public function setSendSmsNotifications(?bool $send_sms_notifications): self
+    {
+        $this->send_sms_notifications = $send_sms_notifications;
+
         return $this;
     }
 
