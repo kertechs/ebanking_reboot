@@ -6,6 +6,7 @@ use App\Entity\Client;
 use App\Entity\Comptes;
 use App\Entity\Demandes;
 use App\Entity\Operations;
+use App\Form\ClientEditsProfileType;
 use App\Form\ClientMakesOperationType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -241,8 +242,10 @@ class EspaceClientController extends AbstractController
         ]);
     }
 
-    public function profile()
+    public function profile(EntityManagerInterface $em)
     {
+        $request = $this->request;
+
         $client_user = $this->getUser();
         $client_id = $client_user->getClientId();
         $client = $this->getDoctrine()
@@ -250,9 +253,26 @@ class EspaceClientController extends AbstractController
             ->find($client_id)
         ;
 
+        $form = $this->createForm(ClientEditsProfileType::class, $client);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /**
+             * @var $client_form Client
+             */
+            $client_form = $form->getData();
+            //dd($operation);
+            $em->persist($client_form);
+            $em->flush();
+
+            $this->addFlash('success', 'Vos informations ont bien été enregistrées.');
+
+            return $this->redirectToRoute('clients_profile');
+        }
+
         return $this->render('espace_client/profile/profile.html.twig', [
             'controller_name' => 'EspaceClientController',
             'client' => $client,
+            'client_profile_form' => $form->createView(),
         ]);
     }
 
