@@ -119,6 +119,44 @@ class EspaceClientController extends AbstractController
             {
                 $em->persist($operation);
                 $this->addFlash('success', 'Votre opération a bien été enregistrée');
+
+                if ($client->getSendSmsNotifications())
+                {
+                    $nexmo_api_key = getenv('NEXMO_API_KEY');
+                    $nexmo_api_secret = getenv('NEXMO_API_SECRET');
+                    $nexmo_from = getenv('NEXMO_FROM');
+                    //dump($nexmo_api_key);
+                    //dump($nexmo_api_secret);
+
+                    $nexmo_client = new \Nexmo\Client(new \Nexmo\Client\Credentials\Basic($nexmo_api_key, $nexmo_api_secret));
+                    //dump($nexmo_client);
+                    $sms_body_init='Nouvelle opération : '.PHP_EOL;
+                    $sms_body=$sms_body_init;
+                    /*if ($operation->getCompteEmetteur()->getCompteClientId() == $client->getId())
+                    {
+                        */$sms_body .= 'débit de '.number_format($operation->getMontant(),2,',',' ').
+                            ' € depuis le compte '.$operation->getCompteEmetteur()->getIban().PHP_EOL;
+                    /*}*/
+
+                    /*if ($operation->getBeneficiaire()->getCompte()->getCompteClientId() == $client->getId())
+                    {
+                        */$sms_body .= 'crédit de '.number_format($operation->getMontant(),2,',',' ').
+                            ' € sur le compte '.$operation->getBeneficiaire()->getCompte()->getIban().PHP_EOL;
+                    /*}*/
+                    //dump($sms_body);
+
+
+                    if ($sms_body != $sms_body_init)
+                    {
+                        $message = $nexmo_client->message()->send([
+                            'to' => $client->getMobile(),
+                            'from' => $nexmo_from,
+                            'text' => $sms_body,
+                        ]);
+                    }
+                    //dump($message);
+                    //dd('Send sms notification');
+                }
             }
             else
             {

@@ -17,6 +17,16 @@ class ClientEditsProfileType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('send_sms_notifications', ChoiceType::class, [
+                'label' => 'Notification SMS d\'opération',
+                'required' => true,
+                'placeholder' => 'Choix',
+                'choices' => [
+                    //'Sélection' => null,
+                    'Oui' => 1,
+                    'Non' => 0,
+                ]
+            ])
             ->add('civilite', ChoiceType::class, [
                 'label' => 'Civilité',
                 'required' => true,
