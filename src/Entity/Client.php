@@ -134,6 +134,11 @@ class Client
      */
     private $send_sms_notifications;
 
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $date_naissance;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -653,6 +658,18 @@ class Client
     public function setSendSmsNotifications(?bool $send_sms_notifications): self
     {
         $this->send_sms_notifications = $send_sms_notifications;
+
+        return $this;
+    }
+
+    public function getDateNaissance(): ?\DateTimeInterface
+    {
+        return $this->date_naissance;
+    }
+
+    public function setDateNaissance(?\DateTimeInterface $date_naissance): self
+    {
+        $this->date_naissance = $date_naissance;
 
         return $this;
     }

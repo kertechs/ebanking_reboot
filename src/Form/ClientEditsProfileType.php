@@ -4,7 +4,9 @@ namespace App\Form;
 
 use App\Entity\Client;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
@@ -49,6 +51,15 @@ class ClientEditsProfileType extends AbstractType
                 'label' => 'Email',
                 'required' => true,
             ])*/
+            ->add('date_naissance', BirthdayType::class, [
+                'label' => 'Date de naissance',
+                //'attr' => ['class' => 'js-datepicker'],
+                'widget' => 'choice',
+                'html5' => true,
+                'format' => 'dd-MM-yyyy',
+                'years' => range(1900,date('Y')-18,1),
+                'required' => true,
+            ])
             ->add('mobile', TelType::class, [
                 'label' => 'Mobile',
                 'required' => true,
