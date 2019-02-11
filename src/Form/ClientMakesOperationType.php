@@ -45,10 +45,15 @@ class ClientMakesOperationType extends AbstractType
             ->add('compte_emetteur', EntityType::class, [
                 'label' => 'Compte emetteur',
                 'choice_label' => function(Comptes $compte){
-                    return sprintf('%s %s (%s €)',
+                    return sprintf('%s %s (%s €) %s %s',
                         $compte->getTypeLbl(),
                         $compte->getIban(),
-                        number_format($compte->getSolde(), 2, ',', ' ')
+                        number_format($compte->getSolde(), 2, ',', ' '),
+                        ( $compte->getDecouvertAutorise() )?' - découvert autorisé : '.number_format($compte->getDecouvertMaximum(), 2, ',', ' ').' €':'',
+                        ' - Montant max possible : ' .
+                        number_format( ( $compte->getDecouvertAutorise() ) ? $compte->getSolde()+abs($compte->getDecouvertMaximum())
+                                                                                   : max(0,$compte->getSolde()), 2, ',', ' ' ) .
+                        ' €'
                     );
 
                     //return $compte->getTypeLbl().' '.$compte->getIban().' ('.number_format($compte->getSolde(), 2, ',', ' '.')';

@@ -521,6 +521,13 @@ class BackOfficeController extends AbstractController
             $em->persist($client);
             $em->flush();
 
+            //Ajouter le compte courant à la liste des bénéficiaires
+            $beneficiaire = new Beneficiaires();
+            $beneficiaire->setCompte($compte);
+            $beneficiaire->setClient($client);
+            $em->persist($beneficiaire);
+            $em->flush();
+
             $user = new User();
             //$user->setCreatedBy($this->getUser()->getId());
             //$user->setUpdatedBy($this->getUser()->getId());

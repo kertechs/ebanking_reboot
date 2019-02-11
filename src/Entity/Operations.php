@@ -217,6 +217,7 @@ class Operations
             $this->type_operation
             && $this->emetteur_compte_id
             && $this->destinataire_compte_id
+            && $this->destinataire_compte_id != $this->emetteur_compte_id
             && $this->date_execution
             && $this->montant
         )

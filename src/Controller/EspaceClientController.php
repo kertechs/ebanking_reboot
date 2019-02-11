@@ -103,18 +103,27 @@ class EspaceClientController extends AbstractController
              * @var $operation Operations
              */
             $operation = $form->getData();
+            dump($operation);
+            if ($operation->getEmetteurCompteId() && $operation->getDestinataireCompteId() == $operation->getEmetteurCompteId())
+            {
+
+                $this->addFlash('error', 'Le compte émetteur et le compte destinataire doivent être différents');
+                return $this->redirectToRoute('clients_virement_new');
+            }
+
+
             //dd($operation);
             $operation->setTypeOperation(Operations::TYPE_VIREMENT);
             $operation->setDateExecution( new \DateTime() );
             if ($operation_result = $operation->execute($em))
             {
+                $em->persist($operation);
                 $this->addFlash('success', 'Votre opération a bien été enregistrée');
             }
             else
             {
                 $this->addFlash('error', 'Votre opération n\'a pas pu être enregistrée. Vérifiez le solde de votre compte');
             }
-            $em->persist($operation);
             $em->flush();
 
             return $this->redirectToRoute('clients_virement_new');
