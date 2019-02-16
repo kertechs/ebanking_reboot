@@ -1,0 +1,13 @@
+date_execution,type_operation,credit_debit,montant,emetteur_compte_id,destinataire_compte_id,created_from_ip,updated_from_ip,created_by,updated_by,deleted_at,created_at,updated_at,details,compte_emetteur_id,beneficiaire_id,compte_destinataire_id
+09-02-2019 17:07:00,TYPE_VIREMENT,NULL,100,1029,1000,NULL,NULL,backoffice@banquedauphine.services,backoffice@banquedauphine.services,NULL,09-02-2019 17:07:00,09-02-2019 17:07:00,Lorem Ipsum 89860,1029,1000,1000
+09-02-2019 17:07:01,TYPE_FRAIS,NULL,7,1000,3,NULL,NULL,backoffice@banquedauphine.services,backoffice@banquedauphine.services,NULL,09-02-2019 17:07:01,09-02-2019 17:07:01,Lorem Ipsum 37051,1000,3,3
+09-02-2019 17:07:02,TYPE_VIREMENT,NULL,120,1029,1000,NULL,NULL,backoffice@banquedauphine.services,backoffice@banquedauphine.services,NULL,09-02-2019 17:07:02,09-02-2019 17:07:02,Lorem Ipsum 34325,1029,1000,1000
+09-02-2019 17:07:03,TYPE_FRAIS,NULL,18,1000,3,NULL,NULL,backoffice@banquedauphine.services,backoffice@banquedauphine.services,NULL,09-02-2019 17:07:03,09-02-2019 17:07:03,Lorem Ipsum 12718,1000,3,3
+09-02-2019 17:07:04,TYPE_CHEQUE,NULL,"124,74",1018,1029,NULL,NULL,backoffice@banquedauphine.services,backoffice@banquedauphine.services,NULL,09-02-2019 17:07:04,09-02-2019 17:07:04,Lorem Ipsum 12719,1018,1029,1029
+09-02-2019 17:07:05,TYPE_CB,NULL,"22,45",1021,1025,NULL,NULL,backoffice@banquedauphine.services,backoffice@banquedauphine.services,NULL,09-02-2019 17:07:05,09-02-2019 17:07:05,Lorem Ipsum 12720,1021,1025,1025
+09-02-2019 17:07:06,TYPE_CB,NULL,"128,76",1025,1021,NULL,NULL,backoffice@banquedauphine.services,backoffice@banquedauphine.services,NULL,09-02-2019 17:07:06,09-02-2019 17:07:06,Lorem Ipsum 12721,1025,1021,1021
+09-02-2019 17:07:07,TYPE_CB,NULL,"39,77",1030,1029,NULL,NULL,backoffice@banquedauphine.services,backoffice@banquedauphine.services,NULL,09-02-2019 17:07:07,09-02-2019 17:07:07,Lorem Ipsum 12722,1030,1029,1029
+09-02-2019 17:07:08,TYPE_CB,NULL,45,1029,1003,NULL,NULL,backoffice@banquedauphine.services,backoffice@banquedauphine.services,NULL,09-02-2019 17:07:08,09-02-2019 17:07:08,Lorem Ipsum 12723,1029,1003,1003
+09-02-2019 17:07:09,TYPE_CB,NULL,159,1004,1005,NULL,NULL,backoffice@banquedauphine.services,backoffice@banquedauphine.services,NULL,09-02-2019 17:07:09,09-02-2019 17:07:09,Lorem Ipsum 12724,1004,1005,1005
+09-02-2019 17:07:10,TYPE_CHEQUE,NULL,"36,89",1005,1031,NULL,NULL,backoffice@banquedauphine.services,backoffice@banquedauphine.services,NULL,09-02-2019 17:07:10,09-02-2019 17:07:10,Lorem Ipsum 12725,1005,1031,1031
+09-02-2019 17:07:11,TYPE_VIREMENT,NULL,1000,1031,1005,NULL,NULL,backoffice@banquedauphine.services,backoffice@banquedauphine.services,NULL,09-02-2019 17:07:11,09-02-2019 17:07:11,Lorem Ipsum 12726,1031,1005,1005

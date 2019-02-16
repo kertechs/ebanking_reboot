@@ -1,0 +1,5 @@
+date_execution;type_operation;credit_debit;montant;emetteur_compte_id;destinataire_compte_id;created_from_ip;updated_from_ip;created_by;updated_by;deleted_at;created_at;updated_at;details;compte_emetteur_id;beneficiaire_id;compte_destinataire_id
+09-02-2019 17:07:00;TYPE_VIREMENT;NULL;100;1029;1000;NULL;NULL;backoffice@banquedauphine.services;backoffice@banquedauphine.services;NULL;09-02-2019 17:07:00;09-02-2019 17:07:00;Lorem Ipsum 89860;1029;1000;1000
+09-02-2019 17:07:00;TYPE_FRAIS;NULL;200;1000;1029;NULL;NULL;backoffice@banquedauphine.services;backoffice@banquedauphine.services;NULL;09-02-2019 17:07:00;09-02-2019 17:07:00;Lorem Ipsum 37051;1000;1029;1029
+09-02-2019 17:07:00;TYPE_VIREMENT;NULL;120;1029;1000;NULL;NULL;backoffice@banquedauphine.services;backoffice@banquedauphine.services;NULL;09-02-2019 17:07:00;09-02-2019 17:07:00;Lorem Ipsum 34325;1029;1000;1000
+09-02-2019 17:07:00;TYPE_FRAIS;NULL;18;1000;1029;NULL;NULL;backoffice@banquedauphine.services;backoffice@banquedauphine.services;NULL;09-02-2019 17:07:00;09:02:2019 17:07:00;Lorem Ipsum 12718;1000;1029;1029

@@ -118,7 +118,8 @@ class Operations
 
     public function getTypeOperationLbl(): ?string
     {
-        return self::TYPES_LABELS[$this->type_operation];
+        return (isset(self::TYPES_LABELS[$this->type_operation]))?self::TYPES_LABELS[$this->type_operation]:$this->type_operation;
+        //return self::TYPES_LABELS[$this->type_operation];
     }
 
     public function setTypeOperation(?string $type_operation): self

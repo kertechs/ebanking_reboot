@@ -47,7 +47,7 @@
                     }]) %}
                 {% endfor %}
 
-                <tr>
+                <tr id="client_{{ client.id }}" class="context-menu-one" data-line_type="client" data-client_id="{{ client.id }}">
                     <td></td>
                     <td>{{ _operations|json_encode() }}</td>
                     <td>{{ client.prenom }}</td>
@@ -57,7 +57,11 @@
                     <td>{{ client.ville}}</td>
                     <td>
                         {% for compte in client.comptes %}
-                            {{ compte.iban }}{% if (client.comptes|length) %}<br />{% endif %}
+                            {{ compte.iban }}
+                            {% if (compte.decouvertAutorise and compte.decouvertMaximum) %}
+                                (<span id="compte_{{ compte.id }}" data-line_type="compte" data-client_id="{{ client.id }}" data-compte_id="{{ compte.id }}" data-decouvert_autorise="{{ compte.decouvertAutorise }}" style="color: red;" class="context-menu-one"><i>découvert max: {{ compte.decouvertMaximum }} €</i></span> )
+                            {% endif %}
+                            {% if (client.comptes|length) %}<br />{% endif %}
                         {% endfor %}
                     </td>
                     <td></td>
@@ -67,7 +71,19 @@
 
             <tfoot></tfoot>
         </table>
+
     </div>
+    {#<div class="row">
+        <span id="oualou1" class="context-menu-one btn btn-neutral" data-id="blabal" data-truc="muche">right click me</span>
+    </div>#}
+
+
+
+    {#<div id="context-menu" style="display:none;">
+        <a class="dropdown-item" href="#">Action</a>
+        <a class="dropdown-item" href="#">Another action</a>
+        <a class="dropdown-item" href="#">Something else here</a>
+    </div>#}
 
     <style>
         /* For small screen */
@@ -106,6 +122,7 @@
         tr.shown td.details-control {
             background: url('https://datatables.net/examples/resources/details_close.png') no-repeat center center;
         }
+
     </style>
 
     <script>
@@ -174,7 +191,7 @@
                 {
                     "targets": [ 1 ],
                     "visible": false,
-                    "searchable": false
+                    "searchable": true
                 },
                 /*{
                     "targets": [ 3 ],
@@ -198,5 +215,116 @@
                 tr.addClass('shown');
             }
         });
+
+        /*$('td').on('contextmenu', function(e) {
+            //alert('toto');
+            var top = e.pageY - 10;
+            var left = e.pageX - 10;
+
+            $("#context-menu").css({
+                display: "block",
+                border: "1px solid black",
+                top: top,
+                left: left
+            });
+
+            return false;
+        }).on("click", function() {
+            $("context-menu").hide();
+        });
+
+        $("#context-menu a").on("click", function() {
+            $(this).parent().hide();
+        });*/
     </script>
+
+    <script>
+        $(function(){
+            $.contextMenu({
+                selector: '.context-menu-one',
+                build: function($trigger, e) {
+                    console.log($trigger);
+                    console.log($trigger.attr("id"));
+
+                    var id = false;
+                    if ($trigger.attr("id"))
+                    {
+                        id = $trigger.attr("id");
+                    }
+
+                    if (id && $('#'+id).data('line_type'))
+                    {
+                        var line_type = $('#'+id).data('line_type');
+                        //alert(line_type);
+
+                        e.items = {
+                        }
+
+                        switch (line_type)
+                        {
+                            case 'client':
+                                var client_id = $('#'+id).data('client_id');
+                                //alert('client_id = '+client_id+"\n");
+                                e.items = {
+                                    "edit_client": {name: "Editer la fiche client", icon: "edit"},
+                                    "list_demandes": {name: "Historique des demandes du client.", icon: "edit"},
+                                }
+                                break;
+
+                            case 'compte':
+                                var client_id = $('#'+id).data('client_id');
+                                var compte_id = $('#'+id).data('compte_id');
+                                var has_decouvert_autorise = $('#'+id).data('decouvert_autorise');
+                                //alert('client_id = '+client_id+"\n"+'compte_id='+compte_id+"\n");
+                                e.items = {
+                                    "edit_client": {name: "Editer la fiche client", icon: "edit"},
+                                    "edit_decouvert": {name: "Modifier le découvert autorisé", icon: "edit"},
+                                }
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }
+
+                    console.log(e);
+                    // this callback is executed every time the menu is to be shown
+                    // its results are destroyed every time the menu is hidden
+                    // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
+                    return {
+                        callback: function(key, options) {
+                            var m = "clicked: " + key;
+                            //window.console && console.log(m) || alert(m);
+                            switch (key)
+                            {
+                                case 'edit_client':
+                                    document.location.href = "/client/edit/" + client_id;
+                                    break;
+
+                                case 'list_demandes':
+                                    document.location.href = "/demandes/client/" + client_id;
+                                    break;
+
+                                case 'edit_decouvert':
+                                    document.location.href = "/decouvert/edit/" + compte_id;
+                                    break;
+                            }
+                            document.location.href
+                        },
+                        items: e.items
+                        /*items: {
+                            "edit": {name: "Edit", icon: "edit"},
+                            "cut": {name: "Cut", icon: "cut"},
+                            "copy": {name: "Copy", icon: "copy"},
+                            "paste": {name: "Paste", icon: "paste"},
+                            "delete": {name: "Delete", icon: "delete"},
+                            "sep1": "---------",
+                            "quit": {name: "Quit", icon: function($element, key, item){ return 'context-menu-icon context-menu-icon-quit'; }}
+                        }*/
+                    };
+                }
+            });
+        });
+    </script>
+
 {% endblock %}

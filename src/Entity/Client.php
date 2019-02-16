@@ -139,6 +139,11 @@ class Client
      */
     private $date_naissance;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Agences", inversedBy="clients")
+     */
+    private $Agence;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -670,6 +675,18 @@ class Client
     public function setDateNaissance(?\DateTimeInterface $date_naissance): self
     {
         $this->date_naissance = $date_naissance;
+
+        return $this;
+    }
+
+    public function getAgence(): ?Agences
+    {
+        return $this->Agence;
+    }
+
+    public function setAgence(?Agences $Agence): self
+    {
+        $this->Agence = $Agence;
 
         return $this;
     }

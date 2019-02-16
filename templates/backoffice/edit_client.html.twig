@@ -1,0 +1,41 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Backoffice Banque Dauphine{% endblock %}
+
+{% block navbar %}
+    {% include 'backoffice/navbar_authenticated.html.twig' %}
+{% endblock %}
+
+{% block body %}
+
+    {% if app.session.flashbag.peek('success')|length > 0 %}
+        <div class="alert alert-warning">
+            {% for message in app.flashes('success') %}
+                {{ message }}<br />
+            {% endfor %}
+        </div>
+    {% else %}
+    {% endif %}
+
+    {% if app.session.flashbag.peek('error')|length > 0 %}
+        <div class="alert alert-danger">
+            {% for message in app.flashes('error') %}
+                {{ message }}
+            {% endfor %}
+        </div>
+    {% else %}
+    {% endif %}
+
+    <div class="container-fluid" style="padding-top: 55px;">
+        <div class="container-fluid bg-grey">
+            <div class="container">
+                <legend>Editer les informations client</legend>
+
+                {{ form_start(backoffice_client_form) }}
+
+                {{ form_end(backoffice_client_form) }}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

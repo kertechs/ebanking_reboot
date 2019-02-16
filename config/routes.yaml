@@ -7,6 +7,27 @@ bankers:
   host:       "backoffice.banquedauphine.services"
   controller: App\Controller\BackOfficeController::index
 
+bankers_list_demandes:
+  path:       /demandes/client/{client_id}
+  host:       "backoffice.banquedauphine.services"
+  controller: App\Controller\BackOfficeController::list_demandes
+  defaults:
+    client_id: null
+
+bankers_client_edit:
+  path:       /client/edit/{client_id}
+  host:       "backoffice.banquedauphine.services"
+  controller: App\Controller\BackOfficeController::edit_client
+  requirements:
+    client_id: '\d+'
+
+bankers_decouvert_edit:
+  path:       /decouvert/edit/{compte_id}
+  host:       "backoffice.banquedauphine.services"
+  controller: App\Controller\BackOfficeController::edit_decouvert
+  requirements:
+    compte_id: '\d+'
+
 bankers_validate_registration:
   path:       /validateRegistration/{client_id}/{decision}
   host:       "backoffice.banquedauphine.services"

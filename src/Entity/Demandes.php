@@ -143,6 +143,19 @@ class Demandes
     {
         return $this->status;
     }
+    public function getStatusLbl($status=""): ?string
+    {
+        if ($status && isset(self::STATUS_LABELS[$status]))
+        {
+            return self::STATUS_LABELS[$status];
+        }
+        elseif ($status)
+        {
+            return "";
+        }
+
+        return (isset(self::STATUS_LABELS[$this->getStatus()]))?self::STATUS_LABELS[$this->getStatus()]:'';
+    }
 
     public function setStatus(?int $status): self
     {

@@ -1,0 +1,71 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Backoffice Banque Dauphine{% endblock %}
+
+{% block navbar %}
+    {% include 'backoffice/navbar_authenticated.html.twig' %}
+{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid" style="padding-top: 55px;">
+    <table id="historique_demandes" class="table table-striped auto_datatable" cellspacing="0" style="width: 100%;">
+        <thead>
+            <tr>
+                <th>Type de demande</th>
+                {#<th>Détail</th>#}
+                <th>Date de la demande</th>
+                <th>Auteur de la demande</th>
+                <th>Client</th>
+                <th>Statut de la demande</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for   _demande in demandes %}
+                <tr>
+                        <td>{{ _demande.typeLbl }}</td>
+                        {#<td>
+                            {{ _demande.details|json_encode() }}
+                        </td>#}
+
+                    <td>{{ _demande.createdAt | date("d/m/Y") }}</td>
+                    <td>{{ _demande.createdBy }}</td>
+                    <td>{{ _demande.client.prenom }} {{ _demande.client.nom }}</td>
+                    <td>
+                        {{ _demande.StatusLbl }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot></tfoot>
+    </table>
+</div>
+
+    <script>
+        $('table.auto_datatable').DataTable( {
+            scrollCollapse: true,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+            },
+            /*"dom": '<"top"if>rt<"bottom"lp><"clear">',*/
+            dom: 'Bfrtip',
+            select:"single",
+            responsive: true,
+            buttons: [
+                'copyHtml5',
+                'excelHtml5',
+                'pdfHtml5',
+                'print',
+            ]
+            ,"columns": [
+                { "data": "type_demande" },
+                //{ "data": "details_demande" },
+                { "data": "date_demande" },
+                { "data": "auteur_demande" },
+                { "data": "client" },
+                { "data": "status_demande" },
+            ],
+        } );
+    </script>
+
+{% endblock %}

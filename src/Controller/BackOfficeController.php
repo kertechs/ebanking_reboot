@@ -8,7 +8,9 @@ use App\Entity\Chequiers;
 use App\Entity\Demandes;
 use App\Entity\Operations;
 use App\Entity\User;
+use App\Form\BackofficeEditsClientType;
 use App\Form\BackofficeMakesOperationType;
+use App\Form\BackofficeEditsDecouvertType;
 use App\Repository\ClientRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -518,6 +520,7 @@ class BackOfficeController extends AbstractController
             $client->setStatus(200);
             $client->setUpdatedAt(new \DateTime());
             $client->addCompte($compte);
+            $client->setAgence($agence);
             $em->persist($client);
             $em->flush();
 
@@ -678,5 +681,94 @@ class BackOfficeController extends AbstractController
             );
         $mailer->send($message);
         //unlink($pdfFilepath);
+    }
+
+    public function list_demandes($client_id)
+    {
+        $client = $this->getDoctrine()
+            ->getRepository(Client::class)
+            ->find($client_id);
+
+        $request = $this->request;
+        $demandes_repository = $this->getDoctrine()->getRepository(Demandes::class);
+        $demandes = $demandes_repository->findBy([
+            'status' => [
+                200,
+                300,
+            ],
+            'client' => $client,
+        ]);
+
+        dump($demandes);
+
+        return $this->render('backoffice/list_demandes.html.twig', [
+            'controller_name' => 'BackOfficeController',
+            'context_entry' => 'Historique demandes',
+            'demandes' => $demandes,
+        ]);
+    }
+
+    public function edit_client($client_id, EntityManagerInterface $em)
+    {
+        $request = $this->request;
+        $clients_repository = $this->getDoctrine()->getRepository(Client::class);
+        $client = $clients_repository->findOneBy([
+            'id' => $client_id,
+        ]);
+
+        $form = $this->createForm(BackofficeEditsClientType::class, $client);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $client = $form->getData();
+            $client->setUpdatedFromIp($request->getClientIp());
+
+            $em->persist($client);
+            $em->flush();
+
+            $this->addFlash('success', 'La modification a bien été enregistrée');
+
+            return $this->redirectToRoute('bankers_client_edit', ['client_id' => $client_id]);
+        }
+
+        return $this->render('backoffice/edit_client.html.twig', [
+            'controller_name' => 'BackOfficeController',
+            'context_entry' => 'Edition client',
+            'backoffice_client_form' => $form->createView(),
+        ]);
+    }
+
+    public function edit_decouvert($compte_id, EntityManagerInterface $em)
+    {
+        $request = $this->request;
+        $comptes_repository = $this->getDoctrine()->getRepository(Comptes::class);
+        $compte = $comptes_repository->findOneBy([
+            'id' => $compte_id,
+        ]);
+        dump($compte);
+
+        $compte = $this->getDoctrine()
+            ->getRepository(Comptes::class)
+            ->find($compte_id)
+        ;
+
+        $form = $this->createForm(BackofficeEditsDecouvertType::class, $compte);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $compte = $form->getData();
+            $compte->setUpdatedFromIp($request->getClientIp());
+
+            $em->persist($compte);
+            $em->flush();
+
+            $this->addFlash('success', 'La modification a bien été enregistrée');
+
+            return $this->redirectToRoute('bankers_decouvert_edit', ['compte_id' => $compte_id]);
+        }
+
+        return $this->render('backoffice/edit_decouvert.html.twig', [
+            'controller_name' => 'BackOfficeController',
+            'context_entry' => 'Edition decouvert autorisé',
+            'backoffice_decouvert_form' => $form->createView(),
+        ]);
     }
 }
