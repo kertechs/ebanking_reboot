@@ -391,39 +391,55 @@ class BackOfficeController extends AbstractController
                     {
                         $comptes_repository = $this->getDoctrine()->getRepository(Comptes::class);
                         $comptes = $comptes_repository->findByIban($iban);
-                        $compte = $comptes[0];
+                        $compte = (isset($comptes[0]))?$comptes[0]:null;
+                        dump($iban);
+                        dump($comptes);
+                        dump($compte);
+
+                        dump('is_array($comptes) => ' . is_array($comptes));
+                        dump('count($comptes) => ' . count($comptes));
+                        dump('$compte->getIban() => ' . $compte->getIban());
+                        dump('is_null($compte) => ' . is_null($compte));
+                        dump('$compte == $client->getCompteCourant() => ' . ($compte == $client->getCompteCourant()));
+
+                        //dd('');
                         //dd($comptes);
-                        if (is_array($comptes) && count($comptes) == 1 &&  $compte->getIban() == $iban && $compte != $client->getCompteCourant())
+                        if (is_array($comptes) && count($comptes) == 1 &&  $compte->getIban() == $iban && !is_null($compte))
                         {
-                            $iban_ok = true;
-                            $matching_compte = $comptes[0];
+                            if ($compte == $client->getCompteCourant()){
+                                $this->addFlash('error', 'Echec de la validation de la demande : impossible d\'ajouter son propre compte "'.$iban.'".');
+                            }
+                            else {
+                                $iban_ok = true;
+                                $matching_compte = $comptes[0];
 
-                            /*$demande_details['matching_compte_found'] = [
-                                'type' => $matching_compte->getType(),
-                                'agence' => $matching_compte->getAgenceId()->getNom(),
-                                'createdAt' => $matching_compte->getCreatedAt()->format('d/m/Y'),
-                                'iban' => $_matching_compte->getIban(),
-                            ];*/
+                                /*$demande_details['matching_compte_found'] = [
+                                    'type' => $matching_compte->getType(),
+                                    'agence' => $matching_compte->getAgenceId()->getNom(),
+                                    'createdAt' => $matching_compte->getCreatedAt()->format('d/m/Y'),
+                                    'iban' => $_matching_compte->getIban(),
+                                ];*/
 
-                            $beneficiaire = new Beneficiaires();
-                            $beneficiaire->setClient($client);
-                            $beneficiaire->setCompte($compte);
-                            $beneficiaire->setNom($demande_details['beneficiaire']);
-                            $em->persist($beneficiaire);
+                                $beneficiaire = new Beneficiaires();
+                                $beneficiaire->setClient($client);
+                                $beneficiaire->setCompte($compte);
+                                $beneficiaire->setNom($demande_details['beneficiaire']);
+                                $em->persist($beneficiaire);
 
-                            $demande->setStatus(Demandes::STATUS_GRANTED);
-                            $em->persist($demande);
+                                $demande->setStatus(Demandes::STATUS_GRANTED);
+                                $em->persist($demande);
 
-                            $em->flush();
-                            //dd($matching_compte);
+                                $em->flush();
+                                //dd($matching_compte);
 
-                            //Add flash message
-                            $this->addFlash('success', 'Compte destinataire ajouté');
+                                //Add flash message
+                                $this->addFlash('success', 'Compte destinataire ajouté');
+                            }
                         }
                         else
                         {
                             //Add flash message
-                            $this->addFlash('error', 'Echec de la validation de la demande');
+                            $this->addFlash('error', 'Echec de la validation de la demande : compte "'.$iban.'" non trouvé');
                         }
                     }
                     break;
